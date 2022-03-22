@@ -29,6 +29,7 @@ class NovoAlunoController extends Controller
         $grid->ind_replicacao('Replicação?')->bool(['1' => true, '0' => false]);
         $grid->num_cnpj('CNPJ');
 
+
         return $grid;
     }
 }
