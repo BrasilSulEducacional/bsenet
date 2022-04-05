@@ -35,7 +35,7 @@ return [
             'provider'  => 'ModuleServiceProvider',
             'manifest'  => 'module.json',
             'mapping'   => [
-                
+
                 // Here you may configure the class mapping, effectively
                 // customizing your generated default module structure.
 
@@ -43,6 +43,7 @@ return [
                 'Database/Factories'  => 'Database/Factories',
                 'Database/Migrations' => 'Database/Migrations',
                 'Database/Seeds'      => 'Database/Seeds',
+                'Models'              => 'Models',
                 'Http/Controllers'    => 'Http/Controllers',
                 'Http/Middleware'     => 'Http/Middleware',
                 'Providers'           => 'Providers',

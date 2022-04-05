@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTurmasTable extends Migration
+class CreateEnderecosTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,12 @@ class CreateTurmasTable extends Migration
      */
     public function up()
     {
-        Schema::create('turmas', function (Blueprint $table) {
+        Schema::create('enderecos', function (Blueprint $table) {
             $table->id();
-            $table->string('turma');
-            $table->string('horario', 255);
-
-            $table->integer('professor_id')->unsigned();
-            $table->foreign('professor_id')->references('id')->on('admin_users');
-
+            $table->char('uf', 2);
+            $table->string('cidade', 255);
+            $table->string('bairro', 255);
+            $table->string('cep', 10);
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ class CreateTurmasTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('turmas');
+        Schema::dropIfExists('enderecos');
     }
 }

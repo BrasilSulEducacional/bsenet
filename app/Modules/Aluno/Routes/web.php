@@ -13,8 +13,17 @@ use Illuminate\Routing\Router;
 |
 */
 
+// Admin::routes();
+
 Route::group([
+    'middleware' => config('admin.route.middleware'),
     'prefix' => 'aluno'
 ], function (Router $router) {
-    $router->get('/novo', 'NovoAlunoController@index')->name('aluno.novo');
+    // $router->get('/', 'AlunoController@index')->name('sis.aluno');
+
+    Route::resource('/controle', 'AlunoController')->names('sis.aluno');
+
+    // // novo aluno
+    // $router->get('/create', 'AlunoController@create')->name('sis.aluno.create');
+    // $router->post('/create', 'AlunoController@store')->name('sis.aluno.create.post');
 });

@@ -11,15 +11,8 @@
 |
 */
 
-use Illuminate\Routing\Router;
-
-// Admin::routes();
-
-Route::group([
-    'middleware' => config('admin.route.middleware'),
-    'prefix' => 'turma'
-], function (Router $router) {
-    Route::resource("/controle", "TurmaController");
-
-    $router->get('/all', 'TurmaController@all')->name('sis.turma.all');
+Route::group(['prefix' => 'professor'], function () {
+    Route::get('/', function () {
+        dd('This is the Professor module index page. Build something great!');
+    });
 });

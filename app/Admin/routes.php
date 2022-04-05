@@ -12,5 +12,5 @@ Route::group([
 ], function (Router $router) {
 
     $router->get('/', 'HomeController@index')->name('home');
-
+    $router->get('/all/professores', 'HomeController@all')->name('sis.professor.all');
 });
