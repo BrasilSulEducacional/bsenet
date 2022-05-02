@@ -19,8 +19,8 @@ class TurmaController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->title('Alunos')
-            ->description('Alunos')
+            ->title('Turmas')
+            ->description('Turmas')
             ->body($this->grid());
     }
 

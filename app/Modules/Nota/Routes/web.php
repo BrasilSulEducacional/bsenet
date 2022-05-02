@@ -11,8 +11,11 @@
 |
 */
 
-Route::group(['prefix' => 'nota'], function () {
-    Route::get('/', function () {
-        dd('This is the Nota module index page. Build something great!');
-    });
+use Illuminate\Routing\Router;
+
+Route::group([
+    'middleware' => config('admin.route.middleware'),
+    'prefix' => 'nota'
+], function (Router $router) {
+    Route::resource('/controle', 'NotaController');
 });

@@ -11,12 +11,13 @@
 |
 */
 
-use Illuminate\Routing\Router;
-
 Route::group([
     'middleware' => config('admin.route.middleware'),
-    'prefix' => 'conteudo'
-], function (Router $router) {
-    Route::resource('/controle', 'ConteudoController');
-    $router->get('/all', 'ConteudoController@all')->name('sis.conteudo.all');
+    'prefix' => 'relatorios'
+], function () {
+    Route::get('/boletim', 'BoletimController@index');
+    Route::post('/boletim/report/{type}', 'BoletimController@report');
+
+    Route::get('/chamada', 'ChamadaController@index');
+    Route::post('/chamada/report', 'ChamadaController@report');
 });

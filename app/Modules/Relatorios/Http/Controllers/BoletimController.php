@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Modules\Relatorios\Http\Controllers;
+
+use App\Http\Controllers\Controller;
+use App\Modules\Aluno\Models\Aluno;
+use App\Modules\Nota\Models\Nota;
+use App\Modules\Turma\Models\Turma;
+use Encore\Admin\Facades\Admin;
+use Encore\Admin\Widgets\Form;
+use Encore\Admin\Layout\Content;
+use Encore\Admin\Grid;
+use Illuminate\Http\Request;
+use Encore\Admin\Widgets\Box;
+use Encore\Admin\Widgets\Tab;
+use Illuminate\Support\Facades\Storage;
+use PDF;
+
+class BoletimController extends Controller
+{
+    // use HasResourceActions;
+
+    public function index(Content $content)
+    {
+        return $content
+            ->title('Relatório')
+            ->description('Boletins')
+            ->body($this->tab());
+    }
+
+    protected function tab()
+    {
+        $tab = new Tab();
+
+        $tab->add('Boletim individual', $this->formIndividual());
+        $tab->add('Boletim da Turma', $this->formClassroom());
+
+        return $tab->render();
+    }
+
+    public function report(Request $request)
+    {
+        if ($request->type == "aluno") {
+            $aluno = Aluno::find($request->input('aluno_id'));
+            $notas = Nota::where('aluno_id', $request->input('aluno_id'))->get();
+            $somaNotas = Nota::where('aluno_id', $request->input('aluno_id'))->sum('nota');
+            $countNotas = Nota::where('aluno_id', $request->input('aluno_id'))->count();
+            $totalFaltas = Nota::where('aluno_id', $request->input('aluno_id'))->sum('faltas');
+            $mediaGeral = $somaNotas / $countNotas;
+            $headersColor = $request->input('boletim_headers_color');
+            $pdf = PDF::loadView('boletim', compact('aluno', 'notas', 'mediaGeral', 'totalFaltas', 'headersColor'));
+
+            $filename = uniqid() . ".pdf";
+            $path = Storage::disk('public')->getAdapter()->getPathPrefix();
+
+            Storage::disk('public')->put($filename, $pdf->output());
+
+            return response()->download($path . $filename)->deleteFileAfterSend();
+        }
+
+        $turma = Turma::find($request->input('turma_id'));
+        $alunos = $turma->alunos;
+
+        $collection = collect([]);
+
+        foreach ($alunos as $aluno) {
+            $notas = Nota::where('aluno_id', $aluno->id)->get();
+            $somaNotas = Nota::where('aluno_id', $aluno->id)->sum('nota');
+            $countNotas = Nota::where('aluno_id', $aluno->id)->count();
+            $totalFaltas = Nota::where('aluno_id', $aluno->id)->sum('faltas');
+            $mediaGeral = $somaNotas / $countNotas;
+            $headersColor = $request->input('boletim_headers_color');
+
+            $collection->push(compact('aluno', 'notas', 'mediaGeral', 'totalFaltas', 'headersColor'));
+        }
+
+        $pdf = PDF::loadView('boletim_turmas', ['alunos' => $collection->toArray()]);
+        $filename = uniqid() . ".pdf";
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix();
+
+        Storage::disk('public')->put($filename, $pdf->output());
+
+        return response()->download($path . $filename)->deleteFileAfterSend();
+    }
+
+    protected function formIndividual()
+    {
+        $form = new Form();
+
+        $form->attribute([
+            'target' => '_blank',
+            'pjax-container'
+        ]);
+
+        $form->action('boletim/report/aluno');
+        // $form->method('GET');
+
+        $form->disablePjax();
+
+        Admin::script("
+        $('button[type=submit]').click(function (e) {
+            var \$form = $(e.currentTarget.form);
+            \$form.unbind('submit');
+        })");
+
+
+        $form->select('aluno_id', 'Aluno')->options(function ($id) {
+            $aluno = Aluno::find($id);
+
+            if ($aluno) {
+                return [$aluno->id => $aluno->nome];
+            }
+        })->ajax(route('sis.aluno.all'))->required();
+
+        $form->color('boletim_headers_color', 'Cores da linha do boletim')->default('#0275c2');
+
+        $box = new Box('Selecione o aluno para gerar o boletim', $form);
+        $box->style('info');
+        $box->solid();
+
+        return $box;
+    }
+
+    protected function formClassroom()
+    {
+        $form = new Form();
+
+        $form->attribute([
+            'target' => '_blank',
+            'pjax-container'
+        ]);
+
+        $form->action('boletim/report/turma');
+
+        $form->disablePjax();
+
+        Admin::script("
+        $('button[type=submit]').click(function (e) {
+            var \$form = $(e.currentTarget.form);
+            \$form.unbind('submit');
+        })");
+
+
+        $form->select('turma_id', 'Turma')->options(function ($id) {
+            $turma = Turma::find($id);
+
+            if ($turma) {
+                return [$turma->id => $turma->turma];
+            }
+        })->ajax(route('sis.turma.all'))->required();
+
+        $form->color('boletim_headers_color', 'Cores da linha do boletim')->default('#0275c2');
+
+        $box = new Box('Selecione uma turma para gerar o boletim', $form);
+        $box->style('info');
+        $box->solid();
+
+        return $box;
+    }
+}

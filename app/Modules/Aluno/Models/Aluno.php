@@ -11,6 +11,6 @@ class Aluno extends Model
 
     public function turma()
     {
-        return $this->hasOne(Turma::class);
+        return $this->belongsTo(Turma::class);
     }
 }

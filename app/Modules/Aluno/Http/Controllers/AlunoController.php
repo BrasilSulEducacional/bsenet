@@ -12,6 +12,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Grid;
 use Encore\Admin\Form;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 
 class AlunoController extends Controller
 {
@@ -31,15 +32,31 @@ class AlunoController extends Controller
 
         $grid->quickSearch();
 
-        $grid->id('ID');
-        $grid->column('codigo');
-        $grid->column('nome');
-        $grid->column('data_nasc')->date('Y');
+        $grid->model()->orderby('codigo', 'desc');
+
+        $grid->id('ID')->sortable();
+        $grid->column('codigo')->sortable();
+        $grid->column('nome')->sortable();
+        $grid->column('data_nasc')->date('Y')->sortable();
         $grid->column('turma_id', 'Turma')->display(function ($turmaId) {
             return Turma::find($turmaId)->turma;
         });
 
-        $grid->disableRowSelector();
+
+        $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
+            $create->integer('codigo', 'Codigo')->required();
+            $create->text('nome', 'Nome')->required();
+            $create->date('data_nasc', 'Data de nascimento')->required();
+
+            $create->select('turma_id', 'Turma')->options(function ($id) {
+                $turma = Turma::find($id);
+
+                if ($turma) {
+                    return [$turma->id => $turma->turma];
+                }
+            })->ajax(route('sis.turma.all'));
+        });
+
 
         return $grid;
     }
@@ -108,5 +125,14 @@ class AlunoController extends Controller
         $form->display('updated_at');
 
         return $form;
+    }
+
+    public function all(Request $request)
+    {
+        if ($q = $request->get('q')) {
+            return Aluno::where('nome', 'like', "%$q%")->paginate(null, ['id', 'nome as text']);
+        }
+
+        return Aluno::all()->take(10)->paginate(null, ['id', 'nome as text']);
     }
 }

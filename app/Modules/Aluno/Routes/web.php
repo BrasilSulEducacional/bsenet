@@ -23,6 +23,7 @@ Route::group([
 
     Route::resource('/controle', 'AlunoController')->names('sis.aluno');
 
+    $router->get('/all', 'AlunoController@all')->name('sis.aluno.all');
     // // novo aluno
     // $router->get('/create', 'AlunoController@create')->name('sis.aluno.create');
     // $router->post('/create', 'AlunoController@store')->name('sis.aluno.create.post');
