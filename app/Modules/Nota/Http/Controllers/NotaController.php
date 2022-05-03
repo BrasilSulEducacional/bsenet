@@ -63,7 +63,7 @@ class NotaController extends Controller
                 }
             })->ajax(route('sis.conteudo.all'))->required();
 
-            $create->integer('nota');
+            $create->integer('nota', 'Notas');
             $create->integer('faltas');
             $create->integer('aulas', 'Aulas dadas');
         });

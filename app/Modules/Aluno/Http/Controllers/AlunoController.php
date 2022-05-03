@@ -30,7 +30,9 @@ class AlunoController extends Controller
     {
         $grid = new Grid(new Aluno);
 
-        $grid->quickSearch();
+        $grid->quickSearch(function ($model, $query) {
+            $model->where('nome', 'like', "%{$query}%")->orWhere('codigo', 'like', "%{$query}%");
+        });
 
         $grid->model()->orderby('codigo', 'desc');
 
