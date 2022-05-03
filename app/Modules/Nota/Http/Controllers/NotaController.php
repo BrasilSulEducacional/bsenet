@@ -44,6 +44,28 @@ class NotaController extends Controller
         $grid->column('faltas', 'Faltas');
         $grid->column('aulas', 'Aulas dadas');
 
+        $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
+            $create->select('aluno_id', 'Aluno')->options(function ($id) {
+                $aluno = Aluno::find($id);
+
+                if ($aluno) {
+                    return [$aluno->id => $aluno->nome];
+                }
+            })->ajax(route('sis.aluno.all'))->required();
+
+            $create->select('conteudo_id', 'Conteúdo')->options(function ($id) {
+                $conteudo = Conteudo::find($id);
+
+                if ($conteudo) {
+                    return [$conteudo->id => $conteudo->name];
+                }
+            })->ajax(route('sis.conteudo.all'))->required();
+
+            $create->integer('nota');
+            $create->integer('faltas');
+            $create->integer('aulas', 'Aulas dadas');
+        });
+
         return $grid;
     }
 
