@@ -123,7 +123,7 @@ class NotaController extends Controller
             if ($aluno) {
                 return [$aluno->id => $aluno->nome];
             }
-        })->ajax(route('sis.aluno.all'));
+        })->ajax(route('sis.aluno.all'))->required();
 
         $form->select('conteudo_id', 'Conteúdo')->options(function ($id) {
             $conteudo = Conteudo::find($id);
@@ -131,11 +131,11 @@ class NotaController extends Controller
             if ($conteudo) {
                 return [$conteudo->id => $conteudo->name];
             }
-        })->ajax(route('sis.conteudo.all'));
+        })->ajax(route('sis.conteudo.all'))->required();
 
-        $form->decimal('nota');
-        $form->decimal('faltas');
-        $form->decimal('aulas', 'Aulas dadas');
+        $form->decimal('nota')->required();
+        $form->decimal('faltas')->required();
+        $form->decimal('aulas', 'Aulas dadas')->required();
 
         $form->display('created_at');
         $form->display('updated_at');
