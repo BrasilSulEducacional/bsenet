@@ -32,6 +32,8 @@ class NotaController extends Controller
 
         $grid->quickSearch();
 
+        $grid->model()->orderby('created_at', 'desc');
+
         $grid->column('aluno_id', 'Aluno')->display(function ($alunoId) {
             return Aluno::find($alunoId)->nome;
         });
