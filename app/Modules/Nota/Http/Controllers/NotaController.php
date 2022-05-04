@@ -32,11 +32,28 @@ class NotaController extends Controller
 
         $grid->quickSearch();
 
-        $grid->model()->orderby('created_at', 'desc');
+        $grid->model()->orderBy('created_at', 'desc');
+        // $grid->model()->where('created_at', 'desc');
 
         $grid->column('aluno_id', 'Aluno')->display(function ($alunoId) {
             return Aluno::find($alunoId)->nome;
         });
+
+        // ->expand(function ($model) {
+        //     $aluno = $model->aluno;
+
+
+        //     $notas = $aluno->notas()->get()->map(function ($nota) {
+        //         return [
+        //             'conteudo' => $nota->conteudo->name,
+        //             'nota' => $nota->nota,
+        //             'faltas' => $nota->faltas
+        //         ];
+        //     });
+
+
+        //     return new Table(['conteudo', 'nota', 'faltas'], $notas->toArray());
+        // })
 
         $grid->column('conteudo_id', 'Conteúdo')->display(function ($conteudoId) {
             return Conteudo::find($conteudoId)->name;
