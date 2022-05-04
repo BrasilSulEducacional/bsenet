@@ -36,13 +36,14 @@ class AlunoController extends Controller
 
         $grid->model()->orderby('codigo', 'desc');
 
-        $grid->id('ID')->sortable();
+        $turmas = Turma::all()->pluck('turma', 'id')->toArray();
+
+
+        $grid->id('ID')->sortable()->hide();
         $grid->column('codigo')->sortable();
         $grid->column('nome')->sortable();
         $grid->column('data_nasc')->date('Y')->sortable();
-        $grid->column('turma_id', 'Turma')->display(function ($turmaId) {
-            return Turma::find($turmaId)->turma;
-        });
+        $grid->column('turma_id', 'Turma')->editable('select', $turmas);
 
 
         $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
