@@ -49,8 +49,12 @@ class NotaController extends Controller
                 ];
             });
 
-            $table = new Table(['Conteúdo', 'Nota', 'Faltas'], $notas->toArray(), ['table-striped', 'table-hover']);
-            $box = new Box('Notas', $table->render());
+            $table = new Table(['Conteúdo', 'Nota', 'Faltas', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
+
+            $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
+
+            $box = new Box('Notas', $table->render(), $footer);
+            $box->addTools("<a href='#'> boletim </a>");
             return $box;
         });
 
