@@ -16,7 +16,8 @@ Route::group([
     'prefix' => 'relatorios'
 ], function () {
     Route::get('/boletim', 'BoletimController@index');
-    Route::post('/boletim/report/{type}', 'BoletimController@report');
+    Route::post('/boletim/report/{type}', 'BoletimController@report', 'report.boletim');
+    Route::get('/boletim/report/{type}/{aluno}', 'BoletimController@report');
 
     Route::get('/chamada', 'ChamadaController@index');
     Route::post('/chamada/report', 'ChamadaController@report');
