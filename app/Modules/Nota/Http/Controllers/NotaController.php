@@ -2,17 +2,19 @@
 
 namespace App\Modules\Nota\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Modules\Aluno\Models\Aluno;
-use App\Modules\Conteudo\Models\Conteudo;
-use App\Modules\Nota\Models\Nota;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
-use Encore\Admin\Layout\Content;
 use Encore\Admin\Grid;
-use Illuminate\Http\Request;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 use Encore\Admin\Widgets\Table;
+use Encore\Admin\Layout\Content;
+use App\Modules\Nota\Models\Nota;
+use App\Modules\Aluno\Models\Aluno;
+use App\Http\Controllers\Controller;
+use Illuminate\Database\Eloquent\Model;
+use App\Modules\Conteudo\Models\Conteudo;
+use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Widgets\Box;
 
 class NotaController extends Controller
 {
@@ -28,45 +30,59 @@ class NotaController extends Controller
 
     protected function grid()
     {
-        $grid = new Grid(new Nota);
+        $grid = new Grid(new Aluno);
 
-        $grid->quickSearch();
+        $grid->model()->has('notas')->orderBy('created_at', 'desc');
 
-        $grid->model()->orderby('created_at', 'desc');
-
-        $grid->column('aluno_id', 'Aluno')->display(function ($alunoId) {
-            return Aluno::find($alunoId)->nome;
+        $grid->quickSearch(function ($model, $query) {
+            $model->where('nome', 'like', "%{$query}%")->orWhere('codigo', 'like', "%{$query}%");
         });
 
-        $grid->column('conteudo_id', 'Conteúdo')->display(function ($conteudoId) {
-            return Conteudo::find($conteudoId)->name;
+        // $grid->model()->notas();
+
+        $grid->column('nome', 'Aluno')->expand(function (Model $model) {
+            $notas = $model->notas->map(function ($nota) {
+                return [
+                    'conteudo' => $nota->conteudo->name,
+                    'nota' => $nota->nota,
+                    'faltas' => $nota->faltas,
+                ];
+            });
+
+            $table = new Table(['Conteúdo', 'Nota', 'Faltas'], $notas->toArray(), ['table-striped', 'table-hover']);
+            $box = new Box('Notas', $table->render());
+            return $box;
         });
 
-        $grid->column('nota', 'Nota');
-        $grid->column('faltas', 'Faltas');
-        $grid->column('aulas', 'Aulas dadas');
+        // $grid->column('conteudo_id', 'Conteúdo')->display(function ($conteudoId) {
+        //     return Conteudo::find($conteudoId)->name;
+        // });
 
-        $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
-            $create->select('aluno_id', 'Aluno')->options(function ($id) {
-                $aluno = Aluno::find($id);
+        // $grid->column('nota', 'Nota');
+        // $grid->column('faltas', 'Faltas');
+        // $grid->column('aulas', 'Aulas dadas');
 
-                if ($aluno) {
-                    return [$aluno->id => $aluno->nome];
-                }
-            })->ajax(route('sis.aluno.all'))->required();
+        // $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
+        //     $create->select('aluno_id', 'Aluno')->options(function ($id) {
+        //         $aluno = Aluno::find($id);
 
-            $create->select('conteudo_id', 'Conteúdo')->options(function ($id) {
-                $conteudo = Conteudo::find($id);
+        //         if ($aluno) {
+        //             return [$aluno->id => $aluno->nome];
+        //         }
+        //     })->ajax(route('sis.aluno.all'))->required();
 
-                if ($conteudo) {
-                    return [$conteudo->id => $conteudo->name];
-                }
-            })->ajax(route('sis.conteudo.all'))->required();
+        //     $create->select('conteudo_id', 'Conteúdo')->options(function ($id) {
+        //         $conteudo = Conteudo::find($id);
 
-            $create->integer('nota', 'Notas');
-            $create->integer('faltas');
-            $create->integer('aulas', 'Aulas dadas');
-        });
+        //         if ($conteudo) {
+        //             return [$conteudo->id => $conteudo->name];
+        //         }
+        //     })->ajax(route('sis.conteudo.all'))->required();
+
+        //     $create->integer('nota', 'Notas');
+        //     $create->integer('faltas');
+        //     $create->integer('aulas', 'Aulas dadas');
+        // });
 
         return $grid;
     }
