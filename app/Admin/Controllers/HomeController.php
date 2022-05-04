@@ -17,21 +17,7 @@ class HomeController extends Controller
         return $content
             ->title('Dashboard')
             ->description('Informações úteis internas...')
-            ->row(Dashboard::title())
-            ->row(function (Row $row) {
-
-                $row->column(4, function (Column $column) {
-                    $column->append(Dashboard::environment());
-                });
-
-                $row->column(4, function (Column $column) {
-                    $column->append(Dashboard::extensions());
-                });
-
-                $row->column(4, function (Column $column) {
-                    $column->append(Dashboard::dependencies());
-                });
-            });
+            ->body(view('dashboard'));
     }
 
     public function all(Request $request)

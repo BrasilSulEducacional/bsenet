@@ -19,7 +19,7 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
     'prefix' => 'turma'
 ], function (Router $router) {
-    Route::resource("/controle", "TurmaController");
+    Route::resource("/controle", "TurmaController")->names('sis.turma');
 
     $router->get('/all', 'TurmaController@all')->name('sis.turma.all');
 });

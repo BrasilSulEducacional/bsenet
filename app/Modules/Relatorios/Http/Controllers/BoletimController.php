@@ -41,13 +41,15 @@ class BoletimController extends Controller
     public function report(Request $request)
     {
         if ($request->type == "aluno") {
-            $aluno = Aluno::find($request->input('aluno_id'));
-            $notas = Nota::where('aluno_id', $request->input('aluno_id'))->get();
-            $somaNotas = Nota::where('aluno_id', $request->input('aluno_id'))->sum('nota');
-            $countNotas = Nota::where('aluno_id', $request->input('aluno_id'))->count();
-            $totalFaltas = Nota::where('aluno_id', $request->input('aluno_id'))->sum('faltas');
+            $alunoId = $request->input('aluno_id') ?: $request->aluno;
+            $aluno = Aluno::find($alunoId);
+            $notas = Nota::where('aluno_id', $alunoId)->get();
+            $somaNotas = Nota::where('aluno_id', $alunoId)->sum('nota');
+            $countNotas = Nota::where('aluno_id', $alunoId)->count();
+            $totalFaltas = Nota::where('aluno_id', $alunoId)->sum('faltas');
+
             $mediaGeral = $somaNotas / $countNotas;
-            $headersColor = $request->input('boletim_headers_color');
+            $headersColor = $request->input('boletim_headers_color') ?: "#0275c2";
             $pdf = PDF::loadView('boletim', compact('aluno', 'notas', 'mediaGeral', 'totalFaltas', 'headersColor'));
 
             $filename = uniqid() . ".pdf";

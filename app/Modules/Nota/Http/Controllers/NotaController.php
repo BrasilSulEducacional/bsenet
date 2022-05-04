@@ -38,14 +38,22 @@ class NotaController extends Controller
             $model->where('nome', 'like', "%{$query}%")->orWhere('codigo', 'like', "%{$query}%");
         });
 
+        $grid->actions(function ($actions) {
+            $actions->disableDelete();
+            $actions->disableEdit();
+            $actions->disableView();
+        });
+
         // $grid->model()->notas();
 
         $grid->column('nome', 'Aluno')->expand(function (Model $model) {
             $notas = $model->notas->map(function ($nota) {
+                $edit = "<a title=\"Editar\" href=\"controle/" . $nota->id . "/edit\"> <i class=\"fa fa-edit\"></i> </a>";
                 return [
                     'conteudo' => $nota->conteudo->name,
                     'nota' => $nota->nota,
                     'faltas' => $nota->faltas,
+                    'edit' => $edit
                 ];
             });
 
