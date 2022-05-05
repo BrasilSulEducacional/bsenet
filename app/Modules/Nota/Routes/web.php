@@ -17,5 +17,5 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
     'prefix' => 'nota'
 ], function (Router $router) {
-    Route::resource('/controle', 'NotaController');
+    Route::resource('/controle', 'NotaController')->names('sis.nota');
 });

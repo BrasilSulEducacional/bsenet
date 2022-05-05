@@ -58,7 +58,7 @@ class NotaController extends Controller
             });
 
             $table = new Table(['Conteúdo', 'Nota', 'Faltas', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
-            
+
             $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
 
             $box = new Box('Notas', $table->render(), $footer);
@@ -140,8 +140,6 @@ class NotaController extends Controller
     protected function form()
     {
         $form = new Form(new Nota);
-
-        // $form->setWidth(2);
 
         $form->display("id");
 
