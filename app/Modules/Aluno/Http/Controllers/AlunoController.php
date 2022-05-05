@@ -45,6 +45,14 @@ class AlunoController extends Controller
         $grid->column('data_nasc')->date('Y')->sortable();
         $grid->column('turma_id', 'Turma')->editable('select', $turmas);
 
+        $grid->filter(function ($filter) {
+            $filter->where(function ($query) {
+                $query->whereHas('turma', function ($query) {
+                    $query->where('turma', 'like', "%{$this->input}%");
+                });
+            }, 'Turma');
+        });
+
 
         $grid->quickCreate(function (Grid\Tools\QuickCreate $create) {
             $create->integer('codigo', 'Codigo')->required();
