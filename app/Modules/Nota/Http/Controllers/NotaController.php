@@ -32,7 +32,7 @@ class NotaController extends Controller
     {
         $grid = new Grid(new Aluno);
 
-        $grid->model()->has('notas')->orderBy('created_at', 'desc');
+        $grid->model()->has('notas');
 
         $grid->quickSearch(function ($model, $query) {
             $model->where('nome', 'like', "%{$query}%")->orWhere('codigo', 'like', "%{$query}%");
@@ -58,7 +58,7 @@ class NotaController extends Controller
             });
 
             $table = new Table(['Conteúdo', 'Nota', 'Faltas', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
-            
+
             $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
 
             $box = new Box('Notas', $table->render(), $footer);
