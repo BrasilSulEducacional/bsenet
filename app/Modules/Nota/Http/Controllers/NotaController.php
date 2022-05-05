@@ -46,6 +46,8 @@ class NotaController extends Controller
 
         // $grid->model()->notas();
 
+        $grid->column('codigo');
+
         $grid->column('nome', 'Aluno')->expand(function (Model $model) {
             $notas = $model->notas->map(function ($nota) {
                 $edit = "<a title=\"Editar\" href=\"controle/" . $nota->id . "/edit\"> <i class=\"fa fa-edit\"></i> </a>";
@@ -65,6 +67,8 @@ class NotaController extends Controller
             $box->addTools("<a href='#'> boletim </a>");
             return $box;
         });
+
+        $grid->column('turma.turma', 'Turma');
 
         // $grid->column('conteudo_id', 'Conteúdo')->display(function ($conteudoId) {
         //     return Conteudo::find($conteudoId)->name;
