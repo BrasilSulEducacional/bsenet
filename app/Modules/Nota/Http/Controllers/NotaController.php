@@ -141,8 +141,6 @@ class NotaController extends Controller
     {
         $form = new Form(new Nota);
 
-        // $form->setWidth(2);
-
         $form->display("id");
 
         $form->select('aluno_id', 'Aluno')->options(function ($id) {
