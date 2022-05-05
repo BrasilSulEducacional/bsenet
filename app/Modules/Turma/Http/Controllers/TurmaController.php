@@ -35,15 +35,9 @@ class TurmaController extends Controller
         $grid->column("professor_id", "Professor")->display(function ($professorId) {
             return Administrator::find($professorId)->name;
         });
-<<<<<<< HEAD
-        // $grid->column('quantidade', 'Quantidade de alunos')->display(function ($param) {
-
-        // });
-=======
         $grid->column('alunos')->display(function ($teste) {
             return count($teste);
         })->label();
->>>>>>> e29d4d0b53f0f60864ac1ab6301a2d10f5a535a2
 
         return $grid;
     }
