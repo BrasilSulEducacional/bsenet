@@ -19,5 +19,5 @@ Route::group([
 
     Route::get('/turma/{turmaId}', 'ChamadaController@turma')->name('chamada.turma');
 
-    Route::get('/realizar/{turmaId}', 'ChamadaController@chamada')->name('chamada.create');
+    Route::get('/realizar/{turmaId}', 'ChamadaController@chamada')->name('chamada.register');
 });
