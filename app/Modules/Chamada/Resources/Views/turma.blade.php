@@ -45,18 +45,32 @@
         </table>
     </div>
 </div> --}}
-{{ dd($form) }}
 {!! $box !!}
 <script>
-    $(function () {
+    $(function() {
         $("input[data-input-check]").iCheck({
             handle: 'radio',
             radioClass: 'icheckbox_minimal-blue',
             disabledClass: '',
         });
 
-        $("input[data-input-check]").on('ifClicked', function (e) {
+        $("input[data-input-check]").on('ifClicked', function(e) {
             $(this).iCheck('uncheck');
+        });
+
+        $("a#registerChamada").click(function(e) {
+            e.preventDefault();
+
+            var $tbody = $("tbody");
+            var data = {};
+
+            $tbody.children("tr").each(function(i, el) {
+                var $tr = $(this);
+                var codigo = $(el).children('td').eq(0).text()
+                // var 
+                console.log(codigo);
+            });
+
         });
     });
 </script>

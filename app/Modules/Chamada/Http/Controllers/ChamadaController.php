@@ -59,18 +59,13 @@ class ChamadaController extends Controller
 
         $table = new Table($tableHeader, $alunosRows->toArray(), $tableStyle);
 
-        $form = new WidgetsForm();
-        $form->action(route('chamada.register', ['turmaId' => $turma->id]));
-        dd($form);
-
-        $footer = "<a class=\"btn btn-primary pull-right\" href=\"" . route('chamada.register', ['turmaId' => $turma->id]) . "\" target=\"_blank\"> Confirmar </a>";
+        $footer = "<a class=\"btn btn-primary pull-right\" id=\"registerChamada\" href=\"" . route('chamada.register', ['turmaId' => $turma->id]) . "\"> Confirmar </a>";
         $box = new Box('Chamada', $table, $footer);
-
 
         return $content
             ->title('Turma ' . $turma->turma)
             ->description('Selecione os alunos que faltaram')
-            ->body(view('chamada::turma', ['box' => $box, 'form' => $form]));
+            ->body(view('chamada::turma', ['box' => $box,]));
     }
 
     public function chamada(Content $content, Request $request)
