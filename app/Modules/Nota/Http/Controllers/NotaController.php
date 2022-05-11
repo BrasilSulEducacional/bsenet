@@ -32,7 +32,7 @@ class NotaController extends Controller
     {
         $grid = new Grid(new Aluno);
 
-        $grid->model()->has('notas')->orderBy('created_at', 'desc');
+        $grid->model()->has('notas');
 
         $grid->quickSearch(function ($model, $query) {
             $model->where('nome', 'like', "%{$query}%")->orWhere('codigo', 'like', "%{$query}%");
@@ -45,6 +45,8 @@ class NotaController extends Controller
         });
 
         // $grid->model()->notas();
+
+        $grid->column('codigo');
 
         $grid->column('nome', 'Aluno')->expand(function (Model $model) {
             $notas = $model->notas->map(function ($nota) {
@@ -65,6 +67,8 @@ class NotaController extends Controller
             $box->addTools("<a href='#'> boletim </a>");
             return $box;
         });
+
+        $grid->column('turma.turma', 'Turma');
 
         // $grid->column('conteudo_id', 'Conteúdo')->display(function ($conteudoId) {
         //     return Conteudo::find($conteudoId)->name;
