@@ -1,50 +1,3 @@
-{{-- <div class="box">
-    <div class="box-header with-border">
-        <div class="pull-left">
-            <label for="date">Data da chamada</label>
-            <div class="input-group">
-                <span class="input-group-addon">
-                    <i class="fa fa-calendar"></i>
-                </span>
-                <input class="form-control" type="date" name="date" id="date" value="{{ date("Y-m-d") }}" max="{{ date("Y-m-d") }}">
-            </div>
-        </div>
-    </div>
-    <div class="box-body">
-        <table class="table table-striped table-hover">
-            <thead>
-                <th>Código</th>
-                <th>Nome</th>
-                <th>Compareceu?</th>
-                <th>Justificada?</th>
-            </thead>
-            <tbody>
-                @foreach ($alunos as $aluno)
-                    <tr>
-                        <td> {{ $aluno->codigo }} </td>
-                        <td> {{ $aluno->nome }} </td>
-                        <td>
-                            <input 
-                                type="radio" 
-                                data-input-check 
-                                data-input-falta 
-                                name="checkFalta__{{ $aluno->id }}" 
-                                id="checkFalta__{{ $aluno->id }}" checked> 
-                        </td>
-                        <td>
-                            <input 
-                                type="radio" 
-                                data-input-check 
-                                data-input-justificado
-                                name="checkFalta__{{ $aluno->id }}" 
-                                id="checkFalta__{{ $aluno->id }}"> 
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-</div> --}}
 {!! $box !!}
 <script>
     $(function() {
@@ -58,17 +11,70 @@
             $(this).iCheck('uncheck');
         });
 
+        $("#chamadaDate").datetimepicker({
+            format: 'DD/MM/YYYY',
+            locale: 'pt-br',
+            allowInputToggle: true
+        });
+
+        $(".conteudo").select2({
+            allowClear: true,
+            placeholder: {
+                id: 'conteudo',
+                text: 'Selecione o conteúdo',
+            },
+        })
+
         $("a#registerChamada").click(function(e) {
             e.preventDefault();
 
             var $tbody = $("tbody");
-            var data = {};
+            var chamada = [];
+            var conteudoId = $(".conteudo").val();
+            var chamadaDate = $(".chamadaDate").val();
+            chamadaDate = chamadaDate.split("/").reverse().join("-");
+            console.log(chamadaDate);
 
             $tbody.children("tr").each(function(i, el) {
                 var $tr = $(this);
-                var codigo = $(el).children('td').eq(0).text()
-                // var 
-                console.log(codigo);
+                var codigo = $(el).children('td').eq(0).text();
+
+
+                var $firstPeriod = $(`[name=falta__${codigo}__first]`);
+                var $secondPeriod = $(`[name=falta__${codigo}__second]`);
+
+                var firstPeriod = {
+                    falta: $firstPeriod.eq(0).iCheck('update')[0].checked,
+                    falta_justificada: $firstPeriod.eq(1).iCheck('update')[0].checked,
+                }
+
+                var secondPeriod = {
+                    falta: $secondPeriod.eq(0).iCheck('update')[0].checked,
+                    falta_justificada: $secondPeriod.eq(1).iCheck('update')[0].checked,
+                }
+
+                chamada.push({
+                    codigo,
+                    conteudoId,
+                    chamadaDate,
+                    firstPeriod,
+                    secondPeriod,
+                });
+
+            });
+
+
+            $.pjax({
+                url: $(this).attr('href'),
+                container: '#pjax-container',
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                data: JSON.stringify(chamada),
+
+                method: "POST",
+                dataType: 'application/json',
+                contentType: 'application/json; charset=utf-8',
             });
 
         });

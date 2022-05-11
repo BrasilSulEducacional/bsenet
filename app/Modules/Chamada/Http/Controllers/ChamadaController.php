@@ -5,7 +5,9 @@ namespace App\Modules\Chamada\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Modules\Aluno\Models\Aluno;
 use App\Modules\Chamada\Models\Chamada;
+use App\Modules\Conteudo\Models\Conteudo;
 use App\Modules\Turma\Models\Turma;
+use Carbon\Carbon;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
@@ -45,12 +47,12 @@ class ChamadaController extends Controller
                 'codigo' => $aluno->codigo,
                 'aluno' => $aluno->nome,
                 'primeiro_periodo' => '
-                    F<input type="radio" data-input-check name="falta__' . $aluno->id . '__first" id="falta__' . $aluno->id . '">
-                    FJ<input type="radio" data-input-check name="falta__' . $aluno->id . '__first" id="falta__' . $aluno->id . '">
+                    F<input type="radio" data-input-check name="falta__' . $aluno->codigo . '__first" id="falta__' . $aluno->codigo . '">
+                    FJ<input type="radio" data-input-check name="falta__' . $aluno->codigo . '__first" id="falta__' . $aluno->codigo . '">
                 ',
                 'segundo_periodo' => '
-                    F<input type="radio" data-input-check name="falta__' . $aluno->id . '__second" id="falta__' . $aluno->id . '">
-                    FJ<input type="radio" data-input-check name="falta__' . $aluno->id . '__second" id="falta__' . $aluno->id . '">
+                    F<input type="radio" data-input-check name="falta__' . $aluno->codigo . '__second" id="falta__' . $aluno->codigo . '">
+                    FJ<input type="radio" data-input-check name="falta__' . $aluno->codigo . '__second" id="falta__' . $aluno->codigo . '">
                 '
             ];
         });
@@ -58,9 +60,57 @@ class ChamadaController extends Controller
         $tableStyle = ['table-striped', 'table-hover'];
 
         $table = new Table($tableHeader, $alunosRows->toArray(), $tableStyle);
+        $conteudos = Conteudo::all()->pluck('name', 'id');
+        $latest = $turma->chamadas()->latest();
+
+        $options = $conteudos->reduce(function ($a, $b, $key) use ($latest) {
+            $checked = $latest->value('conteudo_id') ?: null;
+
+            return $a . "<option value=\"{$key}\" " . ($checked == $key ? 'checked' : '') . "> {$b} </option> \n";
+        });
+
+        $header = "
+        <div class=\"fields-group form-horizontal\">
+            <div class=\"col-md-12\">
+                <div class=\"form-group\">
+                    <label for=\"chamadaDate\" class=\"col-sm-2 control-label\">Dia</label>
+                    <div class=\"col-sm-8\">
+                        <div class=\"input-group\">
+                            <span class=\"input-group-addon\">
+                                <i class=\"fa fa-calendar fa-fw\"></i>
+                            </span>
+                            <input type=\"text\" id=\"chamadaDate\" class=\"form-control chamadaDate\" value=\"" . date("Y-m-d") . "\">
+                        </div>
+                    </div>
+                </div>
+
+                <div class=\"form-group\">
+                    <label for=\"conteudo\" class=\"col-sm-2 control-label\">Conteúdo</label>
+                    <div class=\"col-sm-8\">
+                        <div class=\"input-group\">
+                            <span class=\"input-group-addon\">
+                                <i class=\"fa fa-pencil fa-fw\"></i>
+                            </span>
+                            <input type=\"hidden\" name=\"conteudo\">
+                            <select class=\"form-control conteudo\" style=\"width: 100%;\" name=\"conteudo\">
+                                {$options}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>    
+        </div>
+        ";
+
+        $form = new WidgetsForm();
+
+        $form->date('data')->format("DD/MM/YYYY");
+        $form->select('conteudo')->options($conteudos->toArray())->default($turma->chamadas()->latest()->value('conteudo_id'));
+        $form->disableReset();
+        $form->disableSubmit();
 
         $footer = "<a class=\"btn btn-primary pull-right\" id=\"registerChamada\" href=\"" . route('chamada.register', ['turmaId' => $turma->id]) . "\"> Confirmar </a>";
-        $box = new Box('Chamada', $table, $footer);
+        $box = new Box('Chamada', $header . $table, $footer);
 
         return $content
             ->title('Turma ' . $turma->turma)
@@ -70,29 +120,52 @@ class ChamadaController extends Controller
 
     public function chamada(Content $content, Request $request)
     {
-        dd($request->input());
-        // $form = new Form(new Chamada);
+        $chamada = collect($request->input());
 
-        // $alunosModel = Aluno::has('turma')->get();
-        // $alunos = $alunosModel->map(function ($aluno) {
-        //     $presenca = "";
-        //     $justificado = "";
+        // dd($request->input());
 
-        //     return [
-        //         'nome' => $aluno->nome,
-        //         'presenca' => $presenca,
-        //         'justificado' => $justificado,
-        //     ];
-        // });
+        $chamada = $chamada->map(function ($aluno) {
+            if ($aluno["firstPeriod"]["falta"] == $aluno["firstPeriod"]["falta_justificada"]) {
+                $aluno["firstPeriod"]["falta_justificada"] = null;
+            }
 
-        // // dd($alunos->toArray());
+            if (!$aluno["firstPeriod"]["falta"] && $aluno["firstPeriod"]["falta_justificada"]) {
+                $aluno["firstPeriod"]["falta"] = true;
+            }
 
-        // $table = new Table(['Alunos', 'Presença', 'Justificado'], $alunos->toArray());
-        // $box = new Box('Confirme a presença', $table->render());
+            if ($aluno["secondPeriod"]["falta"] == $aluno["secondPeriod"]["falta_justificada"]) {
+                $aluno["secondPeriod"]["falta_justificada"] = null;
+            }
 
-        // return $content
-        //     ->title('Chamada')
-        //     ->description('Chamada')
-        //     ->body($box);
+            if (!$aluno["secondPeriod"]["falta"] && $aluno["secondPeriod"]["falta_justificada"]) {
+                $aluno["secondPeriod"]["falta"] = true;
+            }
+
+
+
+            $alunoModel = Aluno::where('codigo', $aluno["codigo"])->first();
+            $chamadaFirstPeriod = new Chamada;
+
+            $chamadaFirstPeriod->aluno_id = $alunoModel->id;
+            $chamadaFirstPeriod->turma_id = $alunoModel->turma_id;
+            $chamadaFirstPeriod->conteudo_id = $aluno["conteudoId"];
+            $chamadaFirstPeriod->periodo = 1;
+            $chamadaFirstPeriod->falta = $aluno["firstPeriod"]["falta"];
+            $chamadaFirstPeriod->falta_justificada = $aluno["firstPeriod"]["falta_justificada"];
+            $chamadaFirstPeriod->feita_em = $aluno["chamadaDate"];
+
+            $chamadaSecondPeriod = new Chamada;
+
+            $chamadaSecondPeriod->aluno_id = $alunoModel->id;
+            $chamadaSecondPeriod->turma_id = $alunoModel->turma_id;
+            $chamadaSecondPeriod->conteudo_id = $aluno["conteudoId"];
+            $chamadaSecondPeriod->periodo = 2;
+            $chamadaSecondPeriod->falta = $aluno["secondPeriod"]["falta"];
+            $chamadaSecondPeriod->falta_justificada = $aluno["secondPeriod"]["falta_justificada"];
+            $chamadaSecondPeriod->feita_em = $aluno["chamadaDate"];
+
+            $chamadaFirstPeriod->save();
+            $chamadaSecondPeriod->save();
+        });
     }
 }

@@ -23,9 +23,9 @@
                         </td>
                         <td>
                             @if (!empty(
-                                $turma->chamadas()->latest()->value('released_at')
+                                $turma->chamadas()->latest()->value('feita_em')
                             ))
-                                {{ date('d/m/Y',strtotime($turma->chamadas()->latest()->value('released_at'))) }}
+                                {{ date('d/m/Y',strtotime($turma->chamadas()->latest()->value('feita_em'))) }}
                             @else
                                 Sem registros*
                             @endif

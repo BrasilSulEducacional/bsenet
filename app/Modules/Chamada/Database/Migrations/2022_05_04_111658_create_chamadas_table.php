@@ -18,10 +18,10 @@ class CreateChamadasTable extends Migration
             $table->foreignId('aluno_id')->constrained('alunos');
             $table->foreignId('turma_id')->constrained('turmas');
             $table->foreignId('conteudo_id')->constrained('conteudos');
-            $table->boolean('presente');
+            $table->boolean('falta');
             $table->integer('periodo');
             $table->boolean('falta_justificada')->nullable();
-            $table->date('released_at');
+            $table->dateTime('feita_em');
             $table->timestamps();
         });
     }
