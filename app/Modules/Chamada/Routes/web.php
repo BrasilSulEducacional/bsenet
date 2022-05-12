@@ -15,7 +15,7 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
     'prefix' => 'chamada',
 ], function () {
-    Route::get('/', 'ChamadaController@index');
+    Route::get('/', 'ChamadaController@index')->name('chamada.index');
 
     Route::get('/turma/{turmaId}', 'ChamadaController@turma')->name('chamada.turma');
 

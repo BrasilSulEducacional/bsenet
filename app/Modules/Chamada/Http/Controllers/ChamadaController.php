@@ -79,7 +79,7 @@ class ChamadaController extends Controller
                             <span class=\"input-group-addon\">
                                 <i class=\"fa fa-calendar fa-fw\"></i>
                             </span>
-                            <input type=\"text\" id=\"chamadaDate\" class=\"form-control chamadaDate\" value=\"" . date("Y-m-d") . "\">
+                            <input type=\"date\" id=\"chamadaDate\" class=\"form-control chamadaDate\" value=\"" . date("Y-m-d") . "\">
                         </div>
                     </div>
                 </div>
@@ -167,5 +167,8 @@ class ChamadaController extends Controller
             $chamadaFirstPeriod->save();
             $chamadaSecondPeriod->save();
         });
+
+        admin_toastr('Chamada realizada com sucesso!', 'success');
+        redirect()->route('chamada.index');
     }
 }

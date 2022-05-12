@@ -11,11 +11,12 @@
             $(this).iCheck('uncheck');
         });
 
-        $("#chamadaDate").datetimepicker({
-            format: 'DD/MM/YYYY',
-            locale: 'pt-br',
-            allowInputToggle: true
-        });
+        // $("#chamadaDate").datetimepicker({
+        //     setDate: new Date(),
+        //     format: 'DD/MM/YYYY',
+        //     locale: 'pt-br',
+        //     allowInputToggle: true
+        // });
 
         $(".conteudo").select2({
             allowClear: true,
@@ -32,8 +33,6 @@
             var chamada = [];
             var conteudoId = $(".conteudo").val();
             var chamadaDate = $(".chamadaDate").val();
-            chamadaDate = chamadaDate.split("/").reverse().join("-");
-            console.log(chamadaDate);
 
             $tbody.children("tr").each(function(i, el) {
                 var $tr = $(this);

@@ -25,7 +25,7 @@ class ChamadaController extends Controller
     public function report(Request $request)
     {
         $turma = Turma::find($request->input('turma_id'));
-        $alunos = $turma->alunos;
+        $alunos = $turma->alunos()->orderBy('nome')->get();
         $qtdDatas = range(1, 22);
 
         $pdf = PDF::loadView('chamada', compact('turma', 'alunos', 'qtdDatas'));
