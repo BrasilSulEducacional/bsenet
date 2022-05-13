@@ -64,10 +64,10 @@ class ChamadaController extends Controller
         $latest = $turma->chamadas()->latest();
 
         $options = $conteudos->reduce(function ($a, $b, $key) use ($latest) {
-            $checked = $latest->value('conteudo_id') ?: null;
-
-            return $a . "<option value=\"{$key}\" " . ($checked == $key ? 'checked' : '') . "> {$b} </option> \n";
+            $selected = $latest->value('conteudo_id');
+            return $a . "<option value=\"{$key}\" " . ($selected == $key ? 'selected' : '') . "> {$b} </option> \n";
         });
+
 
         $header = "
         <div class=\"fields-group form-horizontal\">
@@ -169,6 +169,12 @@ class ChamadaController extends Controller
         });
 
         admin_toastr('Chamada realizada com sucesso!', 'success');
-        redirect()->route('chamada.index');
+
+        $box = new Box('Chamada realizada', "<a href=\"" . route('chamada.index') . "\"> Clique aqui </a> para voltar");
+
+        return $content
+            ->title('Turmas')
+            ->description('Turmas')
+            ->body(view("chamada::success", ['box' => $box]));
     }
 }

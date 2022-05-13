@@ -62,6 +62,7 @@
 
             });
 
+            console.log($(this).attr('href'));
 
             $.pjax({
                 url: $(this).attr('href'),
@@ -70,7 +71,6 @@
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: JSON.stringify(chamada),
-
                 method: "POST",
                 dataType: 'application/json',
                 contentType: 'application/json; charset=utf-8',
