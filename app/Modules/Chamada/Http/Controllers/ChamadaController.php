@@ -72,10 +72,10 @@ class ChamadaController extends Controller
                     $item->count() / 2,
                     date("d/m/Y", strtotime($item->last()->feita_em)),
                     "
-                        <a href=\"{$routeRegister}\">
+                        <a class=\"btn btn-success btn-sm\" href=\"{$routeRegister}\">
                             <i class=\"fa fa-calendar-plus-o\"></i> Registrar
                         </a>
-                        <a href=\"{$routeReport}\" id=\"report\" target=\"_blank\">
+                        <a class=\"btn btn-danger btn-sm\" href=\"{$routeReport}\" id=\"report\" target=\"_blank\">
                             <i class=\"fa fa-file-pdf-o\"></i> Relatório
                         </a>
                     "
@@ -87,7 +87,11 @@ class ChamadaController extends Controller
                 $table->setRows($chamada->values()->toArray());
             }
 
-            $collapse->add('Turma ' . $turma->turma, "<div class=\"table-responsive\">" . $table->render() . "</div>");
+            $collapse->add(
+                'Turma ' . $turma->turma,
+                "<div class=\"table-responsive\">" . $table->render() . "</div>"
+                    . "<a class=\"btn btn-primary btn-sm\" href=\"" . route('chamada.turma', ['turmaId' => $turma->id]) . "\">Nova chamada</a>"
+            );
         }
 
         $box = new Box('Selecione a turma', $collapse->render());
