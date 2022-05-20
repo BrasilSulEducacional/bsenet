@@ -27,8 +27,8 @@ class ConteudoController extends Controller
     {
         $grid = new Grid(new Conteudo);
 
-        $grid->column('slug', 'Apelido');
-        $grid->column('name', 'Nome');
+        $grid->column('slug', 'Apelido')->editable();
+        $grid->column('name', 'Nome')->editable();
 
         return $grid;
     }

@@ -41,7 +41,7 @@ class AlunoController extends Controller
 
         $grid->id('ID')->sortable()->hide();
         $grid->column('codigo')->sortable();
-        $grid->column('nome')->sortable();
+        $grid->column('nome')->editable()->sortable();
         $grid->column('data_nasc')->date('Y')->sortable();
         $grid->column('turma_id', 'Turma')->editable('select', $turmas);
 
