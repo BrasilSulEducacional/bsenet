@@ -58,7 +58,7 @@ class ChamadaController extends Controller
 
             $chamada = $chamadasConteudo->map(function ($item, $key) {
                 $routeReport = route('chamada.report', [
-                    'turmaId' => $item->last()->turma->id,
+                    'turmaId'    => $item->last()->turma->id,
                     'conteudoId' => $item->last()->conteudo->id
                 ]);
 
@@ -86,7 +86,8 @@ class ChamadaController extends Controller
             if (!empty($chamada->toArray())) {
                 $table->setRows($chamada->values()->toArray());
             }
-            $collapse->add('Turma ' . $turma->turma, $table);
+
+            $collapse->add('Turma ' . $turma->turma, "<div class=\"table-responsive\">" . $table->render() . "</div>");
         }
 
         $box = new Box('Selecione a turma', $collapse->render());
@@ -151,7 +152,7 @@ class ChamadaController extends Controller
                                 <i class=\"fa fa-pencil fa-fw\"></i>
                             </span>
                             <input type=\"hidden\" name=\"conteudo\">
-                            <select class=\"form-control conteudo\" style=\"width: 100%;\" name=\"conteudo\">
+                            <select class=\"form-control conteudo\" name=\"conteudo\">
                                 {$options}
                             </select>
                         </div>
