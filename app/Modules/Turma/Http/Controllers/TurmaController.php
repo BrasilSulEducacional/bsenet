@@ -16,6 +16,16 @@ class TurmaController extends Controller
 {
     use HasResourceActions;
 
+    protected $dias = [
+        '----'              => 'none',
+        'Segundas-feiras'   => 'Segunda',
+        'Terças-feiras'     => 'Terça',
+        'Quartas-feiras'    => 'Quarta',
+        'Quintas-feiras'    => 'Quinta',
+        'Sextas-feiras'     => 'Sexta',
+        'Sábado'            => 'Sábado',
+    ];
+
     public function index(Content $content)
     {
         return $content
@@ -32,8 +42,8 @@ class TurmaController extends Controller
 
         $grid->id("ID");
         $grid->column("turma");
-        $grid->column("horario");
-        $grid->column("dias");
+        $grid->column("horario")->editable();
+        $grid->column("dias")->editable('select', $this->dias);
         $grid->column("professor_id", "Professor")->editable('select', $professores);
         $grid->column('alunos')->display(function ($teste) {
             return count($teste);
@@ -95,14 +105,7 @@ class TurmaController extends Controller
             ->inputmask(['mask' => '99\h99 \a\s 99\h99']);
 
         $form->select('dias', 'Dias')
-            ->options([
-                'Segundas-feiras' => 'Segunda',
-                'Terças-feiras' => 'Terça',
-                'Quartas-feiras' => 'Quarta',
-                'Quintas-feiras' => 'Quinta',
-                'Sextas-feiras' => 'Sexta',
-                'Sábado' => 'Sábado',
-            ])
+            ->options($this->dias)
             ->placeholder('Selecione o dia');
 
         $form->select('professor_id', 'Professor')->options('/all/professores');
