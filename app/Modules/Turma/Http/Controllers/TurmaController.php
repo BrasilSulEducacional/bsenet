@@ -28,13 +28,13 @@ class TurmaController extends Controller
     {
         $grid = new Grid(new Turma);
 
+        $professores = Administrator::all()->pluck('name', 'id')->toArray();
+
         $grid->id("ID");
         $grid->column("turma");
         $grid->column("horario");
         $grid->column("dias");
-        $grid->column("professor_id", "Professor")->display(function ($professorId) {
-            return Administrator::find($professorId)->name;
-        });
+        $grid->column("professor_id", "Professor")->editable('select', $professores);
         $grid->column('alunos')->display(function ($teste) {
             return count($teste);
         })->label();
