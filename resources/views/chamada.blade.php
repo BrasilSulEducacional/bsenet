@@ -13,9 +13,19 @@
     @page {
         margin: 20px 20px 20px 50px;
     }
+
+    .rotate {
+        writing-mode: vertical-rl;
+        white-space: nowrap;
+        transform: scale(-1);
+        transform: rotate(-90deg) translateX(-40px) translateY(-23px);
+        position: absolute;
+    }
+
 </style>
 <div class="root" style="font-family: Roboto, sans-serif">
-    <table style="width: 100%; border-collapse: collapse; background-color: #0275c2; color: white; width: 100%; border: 1px solid #0275c2;">
+    <table
+        style="width: 100%; border-collapse: collapse; background-color: #0275c2; color: white; width: 100%; border: 1px solid #0275c2;">
         <tr style="padding: 10px; height: 100%;">
             <td colspan="3" style="text-align: center; font-weight: bold;">
                 <span style="float: left;">
@@ -37,8 +47,8 @@
                 <span style="font-weight: bold">
                     Período:
                 </span>
-                {{ date("d/m/Y", strtotime($turma->created_at)) }} a 
-                {{ date("d/m/Y", strtotime("+3 year", strtotime($turma->created_at))) }}
+                {{ date('d/m/Y', strtotime($turma->created_at)) }} a
+                {{ date('d/m/Y', strtotime('+3 year', strtotime($turma->created_at))) }}
             </td>
             <td style="text-align: left;">
                 <span style="font-weight: bold">
@@ -65,26 +75,70 @@
     <table style="width: 100%; border-collapse: collapse">
         <tbody style="border: 1px solid #000; border-top: none;">
             <tr style="border: 1px solid #000">
-                <td style="text-align: center; width: 300px;">
-                    Conteúdo <br><br><br><br>
+                <td style="text-align: center; width: 200px;">
+                    Conteúdo:
+                    <br><br>
+                    @isset($chamada)
+                        <b> {{ $conteudo->name }}</b>
+                    @endisset
+                    <br><br>
                     Nome do Aluno
                 </td>
                 <td style="width: 35px; border: 1px solid #000; text-align: center; font-weight: bold">
                     MTR
                 </td>
-                @foreach ($qtdDatas as $data)
-                    <td style="border: 1px solid #000">
-
+                @foreach ($qtdDatas as $key => $data)
+                    <td style="border: 1px solid #000; width: 20px !important; height: 100px; padding: 0;">
+                        @isset($chamada)
+                            @if (!empty($chamadaDatas->toArray()[$key]))
+                                <div class="rotate">
+                                    {{ date('d/m/Y', strtotime($chamadaDatas->toArray()[$key]['feita_em'])) }}
+                                </div>
+                            @endif
+                        @endisset
                     </td>
                 @endforeach
             </tr>
             @foreach ($alunos as $aluno)
+                @php
+                    $faltas = $chamada->get()->filter(function ($item) use ($aluno) {
+                        return $item->aluno_id == $aluno->id;
+                    });
+                @endphp
                 <tr style="border-bottom: 1px dashed #000;">
                     <td style="height: 25px; border-right: 1px solid #000;"> {{ $aluno->nome }} </td>
                     <td style="border-right: 1px solid #000; text-align: center;"> {{ $aluno->codigo }} </td>
-                    @foreach ($qtdDatas as $item)
-                        <td style="border-right: 1px solid #000;"></td>
-                    @endforeach
+                    @isset($faltas)
+                        @foreach ($faltas as $falta)
+                            <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                @if (!empty($falta->falta_justificada))
+                                    FJ
+                                @elseif($falta->falta)
+                                    F
+                                @else
+                                    &middot;
+                                @endif
+                                {{-- {{ $chamada->get()->toArray()[$key]['aluno_id'] == $aluno->id ?? '' }} --}}
+                                {{-- @isset($chamada->get()->toArray()[$key]['feita_em'])
+                                {{ $chamada->get()->toArray()[$key]['falta'] ? 'F' : '&middot;' }}
+                            @endisset --}}
+                            </td>
+                            {{-- <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                {{-- {{ $chamada->get()->toArray()[$key]['aluno_id'] == $aluno->id ?? '' }} --}}
+
+                            {{-- @isset($chamada->get()->toArray()[$key]['feita_em'])
+                                    {{ $chamada->get()->toArray()[$key]['falta_justificada'] ? 'FJ' : '&middot;' }}
+                                @endisset
+                            </td> --}}
+                        @endforeach
+                    @endisset
+
+                    @if (count($faltas) != count($qtdDatas))
+                        @foreach (range(1, count($qtdDatas) - count($faltas)) as $key => $item)
+                            <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                            </td>
+                        @endforeach
+                    @endif
                 </tr>
             @endforeach
             <tr style="border-bottom: 1px dashed #000;">
@@ -118,5 +172,4 @@
         </tbody>
     </table>
 </div>
-
-{{-- {{dd()}} --}}
+{{-- {{ dd() }} --}}

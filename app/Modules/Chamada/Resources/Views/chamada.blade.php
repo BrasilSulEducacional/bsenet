@@ -7,8 +7,9 @@
             <thead>
                 <tr>
                     <th>Turma</th>
-                    <th>Quantiade de alunos</th>
-                    <th>Última chamada realizada</th>
+                    <th>Alunos</th>
+                    <th>Última chamada</th>
+                    <th>Realizar</th>
                     <th>Ação</th>
                 </tr>
             </thead>
@@ -31,7 +32,17 @@
                             @endif
                         </td>
                         <td>
-                            <a href="{{ route('chamada.turma', ['turmaId' => $turma->id]) }}">Realizar chamada</a>
+                            <a href="{{ route('chamada.turma', ['turmaId' => $turma->id]) }}">
+                                Registrar
+                            </a>
+                        </td>
+                        <td>
+                            <a 
+                                href="{{ route('chamada.report', ['turmaId' => $turma->id]) }}" 
+                                id="report" 
+                                target="_blank">
+                                Relatório
+                            </a>
                         </td>
                     </tr>
                 @endforeach
@@ -40,3 +51,9 @@
         </table>
     </div>
 </div>
+
+<script>
+    $(function () {
+        var $a = $("a#report");
+    });
+</script>

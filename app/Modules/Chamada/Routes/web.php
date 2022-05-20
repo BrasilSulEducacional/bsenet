@@ -21,4 +21,6 @@ Route::group([
 
     Route::get('/realizar/{turmaId}', 'ChamadaController@chamada')->name('chamada.register');
     Route::post('/realizar/{turmaId}', 'ChamadaController@chamada')->name('chamada.register');
+
+    Route::get('/relatorio/{turmaId}/{conteudoId?}', 'ChamadaController@report')->name('chamada.report');
 });

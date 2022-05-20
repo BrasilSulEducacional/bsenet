@@ -19,6 +19,6 @@ Route::group([
     Route::post('/boletim/report/{type}', 'BoletimController@report', 'report.boletim');
     Route::get('/boletim/report/{type}/{aluno}', 'BoletimController@report');
 
-    Route::get('/chamada', 'ChamadaController@index');
-    Route::post('/chamada/report', 'ChamadaController@report');
+    Route::get('/chamada', 'ChamadaController@index')->name('relatorios.chamada.index');
+    Route::post('/chamada/report', 'ChamadaController@report')->name('relatorios.chamada.report');
 });

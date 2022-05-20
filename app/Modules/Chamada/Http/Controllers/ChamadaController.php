@@ -2,24 +2,28 @@
 
 namespace App\Modules\Chamada\Http\Controllers;
 
-use App\Http\Controllers\Controller;
-use App\Modules\Aluno\Models\Aluno;
-use App\Modules\Chamada\Models\Chamada;
-use App\Modules\Conteudo\Models\Conteudo;
-use App\Modules\Turma\Models\Turma;
+use PDF;
 use Carbon\Carbon;
-use Encore\Admin\Auth\Database\Administrator;
-use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Form;
-use Encore\Admin\Form\Builder;
-use Encore\Admin\Layout\Content;
 use Encore\Admin\Grid;
-use Illuminate\Http\Request;
 use Encore\Admin\Show;
+use Illuminate\Http\Request;
 use Encore\Admin\Widgets\Box;
-use Encore\Admin\Widgets\Form as WidgetsForm;
 use Encore\Admin\Widgets\Tab;
+use Encore\Admin\Form\Builder;
 use Encore\Admin\Widgets\Table;
+use Encore\Admin\Layout\Content;
+use App\Modules\Aluno\Models\Aluno;
+use App\Modules\Turma\Models\Turma;
+use App\Http\Controllers\Controller;
+use App\Modules\Chamada\Models\Chamada;
+use Illuminate\Support\Facades\Storage;
+use App\Modules\Conteudo\Models\Conteudo;
+use Encore\Admin\Auth\Database\Administrator;
+use Encore\Admin\Widgets\Form as WidgetsForm;
+use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Widgets\Collapse;
+use Spatie\Browsershot\Browsershot;
 
 class ChamadaController extends Controller
 {
@@ -32,7 +36,62 @@ class ChamadaController extends Controller
         return $content
             ->title('Turmas')
             ->description('Turmas')
-            ->body(view("chamada::chamada", ['turmas' => Turma::where('professor_id', $user->id)->get()]));
+            // ->body(view("chamada::chamada", ['turmas' => Turma::where('professor_id', $user->id)->get()]));
+            ->body($this->chamadas());
+    }
+
+    public function chamadas()
+    {
+        $collapse = new Collapse();
+
+        $turmas = Turma::where('professor_id', auth()->user()->id)->get();
+
+
+        foreach ($turmas as $turma) {
+            $table = new Table(['Conteúdo', 'Registros', 'Último registro', 'Ação']);
+            // $table = new Table(['Keys', 'Values']);
+            $chamadasConteudo = $turma
+                ->chamadas()
+                ->orderBy('conteudo_id')
+                ->get()
+                ->groupBy('conteudo.id');
+
+            $chamada = $chamadasConteudo->map(function ($item, $key) {
+                $routeReport = route('chamada.report', [
+                    'turmaId' => $item->last()->turma->id,
+                    'conteudoId' => $item->last()->conteudo->id
+                ]);
+
+                $routeRegister = route('chamada.turma', [
+                    'turmaId' => $item->last()->turma->id,
+                    'c' => $item->last()->conteudo->id
+                ]);
+
+                return [
+                    $item->last()->conteudo->name,
+                    $item->count() / 2,
+                    date("d/m/Y", strtotime($item->last()->feita_em)),
+                    "
+                        <a href=\"{$routeRegister}\">
+                            <i class=\"fa fa-calendar-plus-o\"></i> Registrar
+                        </a>
+                        <a href=\"{$routeReport}\" id=\"report\" target=\"_blank\">
+                            <i class=\"fa fa-file-pdf-o\"></i> Relatório
+                        </a>
+                    "
+                ];
+            });
+
+
+            if (!empty($chamada->toArray())) {
+                $table->setRows($chamada->values()->toArray());
+            }
+            $collapse->add('Turma ' . $turma->turma, $table);
+        }
+
+        $box = new Box('Selecione a turma', $collapse->render());
+
+        return $box;
     }
 
     public function turma(Content $content, Request $request)
@@ -61,7 +120,7 @@ class ChamadaController extends Controller
 
         $table = new Table($tableHeader, $alunosRows->toArray(), $tableStyle);
         $conteudos = Conteudo::all()->pluck('name', 'id');
-        $latest = $turma->chamadas()->latest();
+        $latest = $request->c ? $turma->chamadas()->where('conteudo_id', $request->c) : $turma->chamadas()->latest();
 
         $options = $conteudos->reduce(function ($a, $b, $key) use ($latest) {
             $selected = $latest->value('conteudo_id');
@@ -176,5 +235,32 @@ class ChamadaController extends Controller
             ->title('Turmas')
             ->description('Turmas')
             ->body(view("chamada::success", ['box' => $box]));
+    }
+
+    public function report(Request $request)
+    {
+
+        $turma = Turma::find($request->turmaId);
+        $alunos = $turma->alunos()->orderBy('nome')->get();
+        $latest = $request->conteudoId ? $turma->chamadas()->where('conteudo_id', $request->conteudoId) : $turma->chamadas()->latest();
+
+        $conteudo = Conteudo::find($latest->value('conteudo_id'));
+        $chamada = Chamada::where('conteudo_id', $latest->value('conteudo_id'))->where('turma_id', $turma->id);
+        $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
+
+        // dd($chamada->groupBy('aluno_id'));
+        // dd($chamada->get());
+
+        $qtdDatas = range(1, 22);
+        $qtdDatasFaltas = range(1, 11);
+
+        $pdf = PDF::loadView('chamada', compact('turma', 'alunos', 'qtdDatas', 'qtdDatasFaltas', 'chamada', 'chamadaDatas', 'conteudo'));
+
+        $filename = uniqid() . ".pdf";
+        $path = Storage::disk('public')->getAdapter()->getPathPrefix();
+
+        Storage::disk('public')->put($filename, $pdf->output());
+
+        return response()->download($path . $filename)->deleteFileAfterSend();
     }
 }
