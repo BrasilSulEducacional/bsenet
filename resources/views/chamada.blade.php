@@ -101,9 +101,11 @@
             </tr>
             @foreach ($alunos as $aluno)
                 @php
-                    $faltas = $chamada->get()->filter(function ($item) use ($aluno) {
-                        return $item->aluno_id == $aluno->id;
-                    });
+                    if (!empty($chamada)) {
+                        $faltas = $chamada->get()->filter(function ($item) use ($aluno) {
+                            return $item->aluno_id == $aluno->id;
+                        });
+                    }
                 @endphp
                 <tr style="border-bottom: 1px dashed #000;">
                     <td style="height: 25px; border-right: 1px solid #000;"> {{ $aluno->nome }} </td>
@@ -133,12 +135,20 @@
                         @endforeach
                     @endisset
 
-                    @if (count($faltas) != count($qtdDatas))
-                        @foreach (range(1, count($qtdDatas) - count($faltas)) as $key => $item)
-                            <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
-                            </td>
+                    @empty($faltas)
+                        @foreach ($qtdDatas as $item)
+                            <td style="border-right: 1px solid #000; text-align: center; font-size: 1em"></td>
                         @endforeach
-                    @endif
+                    @endempty
+                
+                    @isset($faltas)    
+                        @if (count($faltas) != count($qtdDatas))
+                            @foreach (range(1, count($qtdDatas) - count($faltas)) as $key => $item)
+                                <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                </td>
+                            @endforeach
+                        @endif
+                    @endisset
                 </tr>
             @endforeach
             <tr style="border-bottom: 1px dashed #000;">
