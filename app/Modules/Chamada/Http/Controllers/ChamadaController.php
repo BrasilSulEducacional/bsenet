@@ -56,7 +56,7 @@ class ChamadaController extends Controller
                 ->get()
                 ->groupBy('conteudo.id');
 
-                
+
             $chamada = $chamadasConteudo->map(function ($item, $key) use ($turma) {
                 $lastRegister = $item
                     ->sortBy('feita_em')
