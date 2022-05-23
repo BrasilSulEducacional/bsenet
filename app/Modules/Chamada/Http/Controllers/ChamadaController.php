@@ -56,7 +56,13 @@ class ChamadaController extends Controller
                 ->get()
                 ->groupBy('conteudo.id');
 
-            $chamada = $chamadasConteudo->map(function ($item, $key) {
+                
+            $chamada = $chamadasConteudo->map(function ($item, $key) use ($turma) {
+                $lastRegister = $item
+                    ->sortBy('feita_em')
+                    ->pluck('feita_em')
+                    ->last();
+
                 $routeReport = route('chamada.report', [
                     'turmaId'    => $item->last()->turma->id,
                     'conteudoId' => $item->last()->conteudo->id
@@ -70,7 +76,7 @@ class ChamadaController extends Controller
                 return [
                     $item->last()->conteudo->name,
                     $item->count() / 2,
-                    date("d/m/Y", strtotime($item->last()->feita_em)),
+                    date("d/m/Y", strtotime($lastRegister)),
                     "
                         <a class=\"btn btn-success btn-sm\" href=\"{$routeRegister}\">
                             <i class=\"fa fa-calendar-plus-o\"></i> Registrar
