@@ -252,20 +252,41 @@ class ChamadaController extends Controller
     {
 
         $turma = Turma::find($request->turmaId);
-        $alunos = $turma->alunos()->orderBy('nome')->get();
         $latest = $request->conteudoId ? $turma->chamadas()->where('conteudo_id', $request->conteudoId) : $turma->chamadas()->latest();
+        $chamada = Chamada::where('turma_id', $request->turmaId)->where('conteudo_id', $request->conteudoId);
+        // $alunos = $chamada->get()->groupBy('aluno_id')->sortBy('feita_em');
+        $alunos = $chamada->get()->sortBy([
+            ['aluno.nome', 'asc'],
+            ['feita_em', 'asc'],
+        ])->groupBy('aluno_id');
+
+        $pagination = collect();
+        $qtdDatas = range(1, 24);
+        $qtdDatasFaltas = range(1, 12);
+
+        $alunos->map(function ($item, $key) {
+        });
+
+        // dd($chamada->get()->sortBy('aluno.nome')->groupBy('aluno_id')->sortBy('feita_em'));
+
+        // $alunos->map(function ($item) {
+        //     $item->map(function ($aluno) {
+        //         dd($aluno->aluno);
+        //     });
+        // });
 
         $conteudo = Conteudo::find($latest->value('conteudo_id'));
-        $chamada = Chamada::where('conteudo_id', $latest->value('conteudo_id'))->where('turma_id', $turma->id);
+        // $chamada = Chamada::where('conteudo_id', $latest->value('conteudo_id'))->where('turma_id', $turma->id);
         $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
 
         // dd($chamada->groupBy('aluno_id'));
         // dd($chamada->get());
 
-        $qtdDatas = range(1, 22);
-        $qtdDatasFaltas = range(1, 11);
 
-        $pdf = PDF::loadView('chamada', compact('turma', 'alunos', 'qtdDatas', 'qtdDatasFaltas', 'chamada', 'chamadaDatas', 'conteudo'));
+
+
+        // dd();
+        $pdf = PDF::loadView('chamada::pdf', compact('turma', 'alunos', 'qtdDatas', 'qtdDatasFaltas', 'chamada', 'chamadaDatas', 'conteudo',));
 
         $filename = uniqid() . ".pdf";
         $path = Storage::disk('public')->getAdapter()->getPathPrefix();

@@ -2,10 +2,11 @@
 
 namespace App\Modules\Chamada\Models;
 
-use App\Modules\Conteudo\Models\Conteudo;
 use App\Modules\Nota\Models\Nota;
+use App\Modules\Aluno\Models\Aluno;
 use App\Modules\Turma\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
+use App\Modules\Conteudo\Models\Conteudo;
 
 class Chamada extends Model
 {
@@ -19,5 +20,10 @@ class Chamada extends Model
     public function conteudo()
     {
         return $this->belongsTo(Conteudo::class);
+    }
+
+    public function aluno()
+    {
+        return $this->belongsTo(Aluno::class);
     }
 }
