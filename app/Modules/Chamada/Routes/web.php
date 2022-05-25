@@ -23,4 +23,7 @@ Route::group([
     Route::post('/realizar/{turmaId}', 'ChamadaController@chamada')->name('chamada.register');
 
     Route::get('/relatorio/{turmaId}/{conteudoId?}', 'ChamadaController@report')->name('chamada.report');
+
+    Route::get('/revisar/{turmaId}/{conteudoId?}', 'ChamadaController@review')->name('chamada.review');
+    Route::delete('/revisar/{turmaId}/{conteudoId?}/{destroy}', 'ChamadaController@reviewDestroy')->name('chamada.reviewDestroy');
 });

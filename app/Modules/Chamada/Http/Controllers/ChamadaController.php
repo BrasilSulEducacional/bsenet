@@ -75,6 +75,11 @@ class ChamadaController extends Controller
                     'c' => $item->last()->conteudo->id
                 ]);
 
+                $routeReview = route('chamada.review', [
+                    'turmaId'    => $item->last()->turma->id,
+                    'conteudoId' => $item->last()->conteudo->id
+                ]);
+
                 return [
                     $item->last()->conteudo->name,
                     $item->count() / 2,
@@ -85,6 +90,9 @@ class ChamadaController extends Controller
                         </a>
                         <a class=\"btn btn-danger btn-sm\" href=\"{$routeReport}\" id=\"report\" target=\"_blank\">
                             <i class=\"fa fa-file-pdf-o\"></i> Relatório
+                        </a>
+                        <a class=\"btn btn-warning btn-sm\" href=\"{$routeReview}\">
+                            <i class=\"fa fa-edit\"></i> Editar
                         </a>
                     "
                 ];
@@ -105,6 +113,88 @@ class ChamadaController extends Controller
         $box = new Box('Selecione a turma', $collapse->render());
 
         return $box;
+    }
+
+    public function review(Content $content, Request $request)
+    {
+        $turma = Turma::find($request->turmaId);
+        $conteudo = Conteudo::find($request->conteudoId);
+
+        $grid = new Grid(new Chamada());
+        $grid->model()
+            ->where('turma_id', $turma->id)
+            ->where('conteudo_id', $conteudo->id);
+        
+        $grid->model()
+            ->orderBy('feita_em', 'desc')
+            ->orderBy('aluno_id')
+            ->orderBy('periodo');
+        
+        // $grid->column('nome')->expand(function ($aluno) use ($conteudo) {
+        //     $chamada = Chamada::where('turma_id', $aluno->turma->id)
+        //         ->where('aluno_id', $aluno->id)
+        //         ->where('conteudo_id', $conteudo->id)->get();
+
+        //     $display = $chamada->map(function ($item) {
+        //         $color = $item->periodo == 1 ? 'primary' : 'info';
+        //         $falta = $item->falta ? 'F' : '<span style="font-size: 1.5rem;">&middot;</span>';
+        //         $falta_justificada = is_null($item->falta_justificada) ? '--' : ($item->falta_justificada ? 'Sim' : 'Não');
+        //         return [
+        //             'feita_em' => date("d/m/Y", strtotime($item->feita_em)),
+        //             'periodo' => "<span class=\"label label-{$color}\"> {$item->periodo} </span>",
+        //             'falta' => $falta,
+        //             'falta_justificada' => $falta_justificada,
+        //             'acao' => "
+        //                 <a href=\"#\">
+        //                     <i class=\"fa fa-trash\"></i>
+        //                 </a>
+        //             "
+        //         ];
+        //     });
+
+        //     $table = (new Table(['Feita em', 'Período', 'Falta', 'Falta Justificada'], $display->toArray(), ['table-hover', 'table-striped']));
+        //     return new Box('Chamada', $table);
+        // });
+
+        $grid->column('aluno.nome');
+
+        $grid->column('feita_em')->display(function () {
+            return date('Y-m-d', strtotime($this->feita_em));
+        })->date('Y')->sortable();
+        
+        $grid->column('periodo')->display(function ($item) {
+            $color = $item == 1 ? 'danger' : 'success';
+            return "<span class=\"label label-{$color}\"> $item </span>";
+        });
+
+        $grid->filter(function ($filter) {
+            $filter->disableIdFilter();
+            
+            $filter->column(1/2, function ($filter) {
+                $filter->between('feita_em')->date();
+            });
+
+        });
+
+        $grid->disableCreateButton();
+        $grid->disableExport();
+
+        $grid->actions(function ($actions) {
+            $actions->disableEdit();
+            $actions->disableView();
+        });
+
+        return $content
+            ->title('Turmas')
+            ->description('Turmas')
+            ->body($grid->render());
+    }
+
+    public function reviewDestroy(Request $request)
+    {
+        $registers = $request->destroy;
+
+        Chamada::destroy(explode(",", $registers));
     }
 
     public function turma(Content $content, Request $request)
