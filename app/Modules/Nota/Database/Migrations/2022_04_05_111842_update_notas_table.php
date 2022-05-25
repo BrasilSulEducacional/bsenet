@@ -14,7 +14,8 @@ class UpdateNotasTable extends Migration
     public function up()
     {
         Schema::table('notas', function (Blueprint $table) {
-            $table->decimal('nota')->after('conteudo_id');
+            // $table->removeColumn('nota');
+            // $table->decimal('nota')->after('conteudo_id');
             // $table->decimal('nota')->after('conteudo_id');
         });
     }

@@ -29,6 +29,8 @@ class ChamadaController extends Controller
 {
     use HasResourceActions;
 
+    protected $datePerPage = 22;
+
     public function index(Content $content)
     {
         $user = auth()->user();
@@ -254,39 +256,39 @@ class ChamadaController extends Controller
         $turma = Turma::find($request->turmaId);
         $latest = $request->conteudoId ? $turma->chamadas()->where('conteudo_id', $request->conteudoId) : $turma->chamadas()->latest();
         $chamada = Chamada::where('turma_id', $request->turmaId)->where('conteudo_id', $request->conteudoId);
-        // $alunos = $chamada->get()->groupBy('aluno_id')->sortBy('feita_em');
         $alunos = $chamada->get()->sortBy([
             ['aluno.nome', 'asc'],
             ['feita_em', 'asc'],
-        ])->groupBy('aluno_id');
+        ])->groupBy('aluno.nome');
 
         $pagination = collect();
-        $qtdDatas = range(1, 24);
-        $qtdDatasFaltas = range(1, 12);
+        $qtdDatas = range(1, $this->datePerPage);
+        $qtdDatasFaltas = range(1, $this->datePerPage / 2);
 
-        $alunos->map(function ($item, $key) {
+        $paginate = $alunos->first()->paginate($this->datePerPage);
+
+        $pages = collect(range($paginate->currentPage(), $paginate->lastPage()));
+
+        $pages->each(function ($item, $key) use ($pagination, $alunos) {
+            $pagination->put($key, $alunos->map(function ($item) use ($key) {
+                return $item->forPage($key + 1, $this->datePerPage);
+            }));
         });
 
-        // dd($chamada->get()->sortBy('aluno.nome')->groupBy('aluno_id')->sortBy('feita_em'));
-
-        // $alunos->map(function ($item) {
-        //     $item->map(function ($aluno) {
-        //         dd($aluno->aluno);
-        //     });
-        // });
-
         $conteudo = Conteudo::find($latest->value('conteudo_id'));
-        // $chamada = Chamada::where('conteudo_id', $latest->value('conteudo_id'))->where('turma_id', $turma->id);
+
         $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
 
-        // dd($chamada->groupBy('aluno_id'));
-        // dd($chamada->get());
-
-
-
-
-        // dd();
-        $pdf = PDF::loadView('chamada::pdf', compact('turma', 'alunos', 'qtdDatas', 'qtdDatasFaltas', 'chamada', 'chamadaDatas', 'conteudo',));
+        $pdf = PDF::loadView('chamada::pdf', compact(
+            'turma',
+            // 'alunos',
+            'qtdDatas',
+            'qtdDatasFaltas',
+            'chamada',
+            'chamadaDatas',
+            'conteudo',
+            'pagination'
+        ));
 
         $filename = uniqid() . ".pdf";
         $path = Storage::disk('public')->getAdapter()->getPathPrefix();
