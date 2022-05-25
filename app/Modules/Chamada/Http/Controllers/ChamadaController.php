@@ -124,12 +124,12 @@ class ChamadaController extends Controller
         $grid->model()
             ->where('turma_id', $turma->id)
             ->where('conteudo_id', $conteudo->id);
-        
+
         $grid->model()
             ->orderBy('feita_em', 'desc')
             ->orderBy('aluno_id')
             ->orderBy('periodo');
-        
+
         // $grid->column('nome')->expand(function ($aluno) use ($conteudo) {
         //     $chamada = Chamada::where('turma_id', $aluno->turma->id)
         //         ->where('aluno_id', $aluno->id)
@@ -161,7 +161,7 @@ class ChamadaController extends Controller
         $grid->column('feita_em')->display(function () {
             return date('Y-m-d', strtotime($this->feita_em));
         })->date('Y')->sortable();
-        
+
         $grid->column('periodo')->display(function ($item) {
             $color = $item == 1 ? 'danger' : 'success';
             return "<span class=\"label label-{$color}\"> $item </span>";
@@ -169,11 +169,10 @@ class ChamadaController extends Controller
 
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
-            
-            $filter->column(1/2, function ($filter) {
+
+            $filter->column(1 / 2, function ($filter) {
                 $filter->between('feita_em')->date();
             });
-
         });
 
         $grid->disableCreateButton();
@@ -195,6 +194,16 @@ class ChamadaController extends Controller
         $registers = $request->destroy;
 
         Chamada::destroy(explode(",", $registers));
+    }
+
+    public function reviewUpdate(Request $request)
+    {
+        $chamadaId = $request->update;
+        $newDate = $request->input('feita_em');
+
+        Chamada::where('id', $chamadaId)->update([
+            'feita_em' => $newDate
+        ]);
     }
 
     public function turma(Content $content, Request $request)

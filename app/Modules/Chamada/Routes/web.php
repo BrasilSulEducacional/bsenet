@@ -26,4 +26,5 @@ Route::group([
 
     Route::get('/revisar/{turmaId}/{conteudoId?}', 'ChamadaController@review')->name('chamada.review');
     Route::delete('/revisar/{turmaId}/{conteudoId?}/{destroy}', 'ChamadaController@reviewDestroy')->name('chamada.reviewDestroy');
+    Route::put('/revisar/{turmaId}/{conteudoId?}/{update}', 'ChamadaController@reviewUpdate')->name('chamada.reviewUpdate');
 });
