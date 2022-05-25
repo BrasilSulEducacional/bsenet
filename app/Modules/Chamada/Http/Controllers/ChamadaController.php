@@ -170,6 +170,15 @@ class ChamadaController extends Controller
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
 
+            $filter->where(function ($query) {
+                $query->whereHas('aluno', function ($query) {
+                    $query->where('nome', 'like', "%{$this->input}%");
+                });
+            }, 'Nome');
+
+            $filter->column(1 / 2, function ($filter) {
+            });
+
             $filter->column(1 / 2, function ($filter) {
                 $filter->between('feita_em')->date();
             });
