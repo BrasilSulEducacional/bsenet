@@ -127,10 +127,19 @@
 
                     @if ($aluno->count() != count($qtdDatas))
                     @foreach (range(1, count($qtdDatas) - $aluno->count()) as $key => $item)
+                    @if ($aluno->first()->aluno->turma->turma == "Nenhuma")
+                    <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                        -
+                    </td>
+                    @else
                     <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                     </td>
+                    @endif
                     @endforeach
                     @endif
+
+
+
                 </tr>
                 @endforeach
                 <tr style="border-bottom: 1px dashed #000;">

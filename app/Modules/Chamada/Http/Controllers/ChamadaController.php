@@ -356,6 +356,7 @@ class ChamadaController extends Controller
         $latest = $request->conteudoId ? $turma->chamadas()->where('conteudo_id', $request->conteudoId) : $turma->chamadas()->latest();
         $chamada = Chamada::where('turma_id', $request->turmaId)->where('conteudo_id', $request->conteudoId);
         $alunos = $chamada->get()->sortBy([
+            ['aluno.turma', 'desc'],
             ['aluno.nome', 'asc'],
             ['feita_em', 'asc'],
         ])->groupBy('aluno.nome');
