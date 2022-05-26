@@ -18,6 +18,12 @@ class AlunoController extends Controller
 {
     use HasResourceActions;
 
+    protected $situacao = [
+        0 => 'Trancado',
+        1 => 'Cursando',
+        2 => 'Finalizado'
+    ];
+
     public function index(Content $content)
     {
         return $content
@@ -44,6 +50,7 @@ class AlunoController extends Controller
         $grid->column('nome')->editable()->sortable();
         $grid->column('data_nasc')->date('Y')->sortable();
         $grid->column('turma_id', 'Turma')->editable('select', $turmas);
+        $grid->column('status', 'Situação')->editable('select', $this->situacao);
 
         $grid->filter(function ($filter) {
             $filter->where(function ($query) {
@@ -131,6 +138,8 @@ class AlunoController extends Controller
                 return [$turma->id => $turma->turma];
             }
         })->ajax(route('sis.turma.all'));
+
+        $form->display('status', 'Situação')->options($this->situacao)->default(1);
 
         $form->display('created_at');
         $form->display('updated_at');

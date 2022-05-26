@@ -218,7 +218,12 @@ class ChamadaController extends Controller
     public function turma(Content $content, Request $request)
     {
         $turma = Turma::find($request->turmaId);
-        $alunos = $turma->alunos;
+        $alunos = $turma
+            ->alunos()
+            ->where('status', 1)
+            ->orderBy('status', 'desc')
+            ->orderBy('nome')
+            ->get();
 
         $tableHeader = ['Código', 'Aluno', '1º Período (F/FJ)', '2º Período (F/FJ)'];
 
@@ -302,7 +307,9 @@ class ChamadaController extends Controller
     {
         $chamada = collect($request->input());
 
-        // dd($request->input());
+
+        $alunosCancelados = Aluno::where('status', 0);
+        $alunosFinalizados = Aluno::where('status', 2);
 
         $chamada = $chamada->map(function ($aluno) {
             if ($aluno["firstPeriod"]["falta"] == $aluno["firstPeriod"]["falta_justificada"]) {
