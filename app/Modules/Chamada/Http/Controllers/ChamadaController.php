@@ -22,6 +22,7 @@ use App\Modules\Conteudo\Models\Conteudo;
 use Encore\Admin\Auth\Database\Administrator;
 use Encore\Admin\Widgets\Form as WidgetsForm;
 use Encore\Admin\Controllers\HasResourceActions;
+use Encore\Admin\Facades\Admin;
 use Encore\Admin\Widgets\Collapse;
 use Spatie\Browsershot\Browsershot;
 
@@ -225,6 +226,13 @@ class ChamadaController extends Controller
             ->orderBy('nome')
             ->get();
 
+        $excepts = $turma
+            ->alunos()
+            ->where('status', '!=', 1)
+            ->get()
+            ->pluck('id')
+            ->toJson();
+
         $tableHeader = ['Código', 'Aluno', '1º Período (F/FJ)', '2º Período (F/FJ)'];
 
         $alunosRows = $alunos->map(function ($aluno) {
@@ -300,18 +308,43 @@ class ChamadaController extends Controller
         return $content
             ->title('Turma ' . $turma->turma)
             ->description('Selecione os alunos que faltaram')
-            ->body(view('chamada::turma', ['box' => $box,]));
+            ->body(view('chamada::turma', ['box' => $box, 'excepts' => $excepts]));
     }
 
     public function chamada(Content $content, Request $request)
     {
-        $chamada = collect($request->input());
+        $chamada = collect($request->input('chamada'));
+        $conteudoId = $request->input('conteudoId');
+        $chamadaDate = $request->input('chamadaDate');
 
+        // alunos com status diferente de 'Cursando'
+        $excepts = collect($request->input('excepts'));
 
-        $alunosCancelados = Aluno::where('status', 0);
-        $alunosFinalizados = Aluno::where('status', 2);
+        $excepts->each(function ($id) use ($conteudoId, $chamadaDate) {
+            $aluno = Aluno::find($id);
 
-        $chamada = $chamada->map(function ($aluno) {
+            $chamadaFirstPeriod = new Chamada;
+            $chamadaFirstPeriod->aluno_id = $aluno->id;
+            $chamadaFirstPeriod->turma_id = $aluno->turma_id;
+            $chamadaFirstPeriod->conteudo_id = $conteudoId;
+            $chamadaFirstPeriod->feita_em = $chamadaDate;
+            $chamadaFirstPeriod->periodo = 1;
+
+            $chamadaSecondPeriod = new Chamada;
+            $chamadaSecondPeriod->aluno_id = $aluno->id;
+            $chamadaSecondPeriod->turma_id = $aluno->turma_id;
+            $chamadaSecondPeriod->conteudo_id = $conteudoId;
+            $chamadaSecondPeriod->feita_em = $chamadaDate;
+            $chamadaSecondPeriod->periodo = 2;
+
+            $chamadaFirstPeriod->save();
+            $chamadaSecondPeriod->save();
+        });
+
+        $chamada->map(function ($aluno) {
+
+            // dump($aluno);
+
             if ($aluno["firstPeriod"]["falta"] == $aluno["firstPeriod"]["falta_justificada"]) {
                 $aluno["firstPeriod"]["falta_justificada"] = null;
             }
@@ -327,8 +360,6 @@ class ChamadaController extends Controller
             if (!$aluno["secondPeriod"]["falta"] && $aluno["secondPeriod"]["falta_justificada"]) {
                 $aluno["secondPeriod"]["falta"] = true;
             }
-
-
 
             $alunoModel = Aluno::where('codigo', $aluno["codigo"])->first();
             $chamadaFirstPeriod = new Chamada;
@@ -355,14 +386,10 @@ class ChamadaController extends Controller
             $chamadaSecondPeriod->save();
         });
 
+        // admin_success('Chamada', 'Chamada realizada com sucesso!');
         admin_toastr('Chamada realizada com sucesso!', 'success');
 
-        $box = new Box('Chamada realizada', "<a href=\"" . route('chamada.index') . "\"> Clique aqui </a> para voltar");
-
-        return $content
-            ->title('Turmas')
-            ->description('Turmas')
-            ->body(view("chamada::success", ['box' => $box]));
+        return redirect(route('chamada.index'));
     }
 
     public function report(Request $request)

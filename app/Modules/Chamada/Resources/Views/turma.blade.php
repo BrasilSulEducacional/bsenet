@@ -1,6 +1,9 @@
 {!! $box !!}
 <script>
     $(function() {
+
+        var excepts = {{ $excepts }}
+
         $("input[data-input-check]").iCheck({
             handle: 'radio',
             radioClass: 'icheckbox_minimal-blue',
@@ -64,13 +67,20 @@
 
             console.log($(this).attr('href'));
 
+            var completeData = {
+                chamada,
+                excepts,
+                conteudoId,
+                chamadaDate
+            }
+
             $.pjax({
                 url: $(this).attr('href'),
                 container: '#pjax-container',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
-                data: JSON.stringify(chamada),
+                data: JSON.stringify(completeData),
                 method: "POST",
                 dataType: 'application/json',
                 contentType: 'application/json; charset=utf-8',
