@@ -2,7 +2,9 @@
 <script>
     $(function() {
 
-        var excepts = {{ $excepts }}
+        var excepts = {{ $excepts }};
+
+        var turmaId = {{ $turmaId }};
 
         $("input[data-input-check]").iCheck({
             handle: 'radio',
@@ -71,6 +73,7 @@
                 chamada,
                 excepts,
                 conteudoId,
+                turmaId,
                 chamadaDate
             }
 

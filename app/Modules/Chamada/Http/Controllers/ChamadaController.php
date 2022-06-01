@@ -24,6 +24,7 @@ use Encore\Admin\Widgets\Form as WidgetsForm;
 use Encore\Admin\Controllers\HasResourceActions;
 use Encore\Admin\Facades\Admin;
 use Encore\Admin\Widgets\Collapse;
+use Illuminate\Support\MessageBag;
 use Spatie\Browsershot\Browsershot;
 
 class ChamadaController extends Controller
@@ -308,14 +309,24 @@ class ChamadaController extends Controller
         return $content
             ->title('Turma ' . $turma->turma)
             ->description('Selecione os alunos que faltaram')
-            ->body(view('chamada::turma', ['box' => $box, 'excepts' => $excepts]));
+            ->body(view('chamada::turma', ['box' => $box, 'excepts' => $excepts, 'turmaId' => $request->turmaId]));
     }
 
     public function chamada(Content $content, Request $request)
     {
         $chamada = collect($request->input('chamada'));
-        $conteudoId = $request->input('conteudoId');
-        $chamadaDate = $request->input('chamadaDate');
+        $conteudoId = $request->conteudoId;
+        $chamadaDate = $request->chamadaDate;
+        $turmaId = $request->turmaId;
+
+        if (Chamada::where('turma_id', $turmaId)->where('conteudo_id', $conteudoId)->where('feita_em', $chamadaDate)->first()) {
+            $error = new MessageBag([
+                'title' => 'Erro',
+                'message' => 'Erro',
+            ]);
+
+            return back()->with(compact('error'));
+        }
 
         // alunos com status diferente de 'Cursando'
         $excepts = collect($request->input('excepts'));
@@ -387,7 +398,7 @@ class ChamadaController extends Controller
         });
 
         // admin_success('Chamada', 'Chamada realizada com sucesso!');
-        admin_toastr('Chamada realizada com sucesso!', 'success');
+        admin_toastr('Chamada realizada com sucesso!');
 
         return redirect(route('chamada.index'));
     }
