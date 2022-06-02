@@ -67,7 +67,7 @@
 
             });
 
-            console.log($(this).attr('href'));
+            // console.log($(this).attr('href'));
 
             var completeData = {
                 chamada,
@@ -77,16 +77,33 @@
                 chamadaDate
             }
 
-            $.pjax({
+            $.ajax({
                 url: $(this).attr('href'),
-                container: '#pjax-container',
+                // container: '#pjax-container',
                 headers: {
                     'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
                 },
                 data: JSON.stringify(completeData),
                 method: "POST",
-                dataType: 'application/json',
+                dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
+                success: function (response) {
+                    console.log(response);
+                    var message = response.message;
+
+                    if (response.type == 'error') {
+                        $.admin.toastr.error(message)
+                    }
+
+                    if (response.type == 'success') {
+                        $.admin.toastr.success(message);
+
+                        $.pjax({
+                            url: response.redirect_url,
+                            container: '#pjax-container',
+                        });
+                    }
+                }
             });
 
         });

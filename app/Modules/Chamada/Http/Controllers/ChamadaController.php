@@ -320,12 +320,12 @@ class ChamadaController extends Controller
         $turmaId = $request->turmaId;
 
         if (Chamada::where('turma_id', $turmaId)->where('conteudo_id', $conteudoId)->where('feita_em', $chamadaDate)->first()) {
-            $error = new MessageBag([
-                'title' => 'Erro',
-                'message' => 'Erro',
+            
+            echo json_encode([
+                'type' => 'error',
+                'message' => 'Parece que você já fez uma chamada neste dia.'
             ]);
-
-            return back()->with(compact('error'));
+            return;
         }
 
         // alunos com status diferente de 'Cursando'
@@ -398,9 +398,10 @@ class ChamadaController extends Controller
         });
 
         // admin_success('Chamada', 'Chamada realizada com sucesso!');
-        admin_toastr('Chamada realizada com sucesso!');
+        // admin_toastr('Chamada realizada com sucesso!');
 
-        return redirect(route('chamada.index'));
+        // return redirect(route('chamada.index'));
+        return response()->json(['type' => 'success', 'message' => 'Chamada realizada com sucesso!', 'status' => true, 'redirect_url' => route('chamada.index')]);
     }
 
     public function report(Request $request)
