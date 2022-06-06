@@ -320,12 +320,11 @@ class ChamadaController extends Controller
         $turmaId = $request->turmaId;
 
         if (Chamada::where('turma_id', $turmaId)->where('conteudo_id', $conteudoId)->where('feita_em', $chamadaDate)->first()) {
-            
-            echo json_encode([
+
+            return response()->json([
                 'type' => 'error',
                 'message' => 'Parece que você já fez uma chamada neste dia.'
             ]);
-            return;
         }
 
         // alunos com status diferente de 'Cursando'
@@ -416,6 +415,16 @@ class ChamadaController extends Controller
             ['feita_em', 'asc'],
         ])->groupBy('aluno.nome');
 
+        $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
+
+        $alunos->map(function ($item, $key) use ($chamadaDatas) {
+            $diff = $chamadaDatas->pluck('feita_em')->diff($item->pluck('feita_em')->toArray())->all();
+
+            if (!empty($diff)) {
+                $item->put('diff', collect($diff));
+            }
+        });
+
         $pagination = collect();
         $qtdDatas = range(1, $this->datePerPage);
         $qtdDatasFaltas = range(1, $this->datePerPage / 2);
@@ -431,8 +440,6 @@ class ChamadaController extends Controller
         });
 
         $conteudo = Conteudo::find($latest->value('conteudo_id'));
-
-        $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
 
         $pdf = PDF::loadView('chamada::pdf', compact(
             'turma',

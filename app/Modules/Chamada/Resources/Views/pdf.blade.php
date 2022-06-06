@@ -115,13 +115,23 @@
                             <td style="border-right: 1px solid #000; text-align: center;">
                                 {{ $aluno->first()->aluno->codigo }}
                             </td>
+
+                            @if ($aluno->has('diff'))
+                                @foreach ($aluno->get('diff') as $diff)
+                                    {{ dump($diff) }}
+                                    <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                        -
+                                    </td>
+                                @endforeach
+                            @endif
+
                             @foreach ($aluno as $falta)
                                 <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                                     @if (!empty($falta->falta_justificada))
                                         FJ
-                                    @elseif($falta->falta)
+                                    @elseif(!empty($falta->falta))
                                         F
-                                    @elseif(is_null($falta->falta))
+                                    @elseif(!isset($falta->falta))
                                         -
                                     @else
                                         &middot;
@@ -131,7 +141,7 @@
                             @endforeach
 
                             @if ($aluno->count() != count($qtdDatas))
-                                @foreach (range(1, count($qtdDatas) - $aluno->count()) as $key => $item)
+                                @foreach (range(1, count($qtdDatas) - ($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() : 0))) as $key => $item)
                                     @if ($aluno->first()->aluno->turma->turma == 'Nenhuma')
                                         <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                                             -
@@ -142,9 +152,6 @@
                                     @endif
                                 @endforeach
                             @endif
-
-
-
                         </tr>
                     @endforeach
                     <tr style="border-bottom: 1px dashed #000;">
@@ -180,4 +187,4 @@
         </div>
     @endforeach
 </div>
-{{-- {{ dd() }} --}}
+{{ dd() }}

@@ -32,7 +32,11 @@
         })
 
         $("a#registerChamada").click(function(e) {
+            var $a = $(this);
+
             e.preventDefault();
+
+            $a.attr('disabled', true);
 
             var $tbody = $("tbody");
             var chamada = [];
@@ -87,12 +91,13 @@
                 method: "POST",
                 dataType: 'json',
                 contentType: 'application/json; charset=utf-8',
-                success: function (response) {
+                success: function(response) {
                     console.log(response);
                     var message = response.message;
 
                     if (response.type == 'error') {
-                        $.admin.toastr.error(message)
+                        $.admin.toastr.error(message);
+                        $a.attr('disabled', false);
                     }
 
                     if (response.type == 'success') {
