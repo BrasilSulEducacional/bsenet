@@ -25,7 +25,6 @@
         transform: rotate(-90deg) translateX(-40px) translateY(-23px);
         position: absolute;
     }
-
 </style>
 <div class="root" style="font-family: Roboto, sans-serif">
     @foreach ($pagination as $alunos)
@@ -118,26 +117,26 @@
 
                             @if ($aluno->has('diff'))
                                 @foreach ($aluno->get('diff') as $diff)
-                                    {{ dump($diff) }}
                                     <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                                         -
                                     </td>
                                 @endforeach
                             @endif
 
-                            @foreach ($aluno as $falta)
-                                <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
-                                    @if (!empty($falta->falta_justificada))
-                                        FJ
-                                    @elseif(!empty($falta->falta))
-                                        F
-                                    @elseif(!isset($falta->falta))
-                                        -
-                                    @else
-                                        &middot;
-                                    @endif
-
-                                </td>
+                            @foreach ($aluno as $key => $falta)
+                                @if ($key !== 'diff')
+                                    <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                        @if (!empty($falta->falta_justificada))
+                                            FJ
+                                        @elseif(!empty($falta->falta))
+                                            F
+                                        @elseif(!isset($falta->falta))
+                                            -
+                                        @else
+                                            &middot;
+                                        @endif
+                                    </td>
+                                @endif
                             @endforeach
 
                             @if ($aluno->count() != count($qtdDatas))
