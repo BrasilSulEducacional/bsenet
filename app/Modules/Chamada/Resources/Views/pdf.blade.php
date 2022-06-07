@@ -11,7 +11,7 @@
     }
 
     @page {
-        margin: 20px 20px 20px 20px;
+        margin: 20px 20px 20px 30px;
     }
 
     .tables {
@@ -139,8 +139,10 @@
                                 @endif
                             @endforeach
 
+                            {{-- {{ dump($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() - 1 : 0)) }} --}}
+
                             @if ($aluno->count() != count($qtdDatas))
-                                @foreach (range(1, count($qtdDatas) - ($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() : 0))) as $key => $item)
+                                @foreach (range(1, count($qtdDatas) - ($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() - 1 : 0))) as $key => $item)
                                     @if ($aluno->first()->aluno->turma->turma == 'Nenhuma')
                                         <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                                             -
@@ -186,4 +188,4 @@
         </div>
     @endforeach
 </div>
-{{ dd() }}
+{{-- {{ dd() }} --}}
