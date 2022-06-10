@@ -33,6 +33,17 @@ class ChamadaController extends Controller
 
     protected $datePerPage = 22;
 
+    protected $faltas = [
+        0 => 'Presente',
+        1 => 'Falta',
+    ];
+
+    protected $faltasJustificada = [
+        0 => 'Não',
+        1 => 'Sim',
+        null => '-'
+    ];
+
     public function index(Content $content)
     {
         $user = auth()->user();
@@ -168,6 +179,10 @@ class ChamadaController extends Controller
             $color = $item == 1 ? 'danger' : 'success';
             return "<span class=\"label label-{$color}\"> $item </span>";
         });
+
+        $grid->column('falta')->editable('select', $this->faltas);
+
+        $grid->column('falta_justificada')->editable('select', $this->faltasJustificada);
 
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
@@ -421,8 +436,22 @@ class ChamadaController extends Controller
             $diff = $chamadaDatas->pluck('feita_em')->diff($item->pluck('feita_em')->toArray())->all();
 
             if (!empty($diff)) {
-                $item->put('diff', collect($diff));
+                $diff = collect($diff);
+
+                $diff->each(function ($date, $key) use ($item) {
+                    $item->push(collect(["feita_em" => $date]));
+                });
+
+                $sorted = $item->sortBy(function ($date) {
+                    return strtotime(!empty($date->feita_em) ? $date->feita_em : $date->get('feita_em'));
+                }, SORT_REGULAR);
             }
+        });
+
+        $alunos = $alunos->map(function ($item) {
+            return $item->sortBy(function ($date) {
+                return strtotime(!empty($date->feita_em) ? $date->feita_em : $date->get('feita_em'));
+            }, SORT_REGULAR);
         });
 
         $pagination = collect();
@@ -438,6 +467,8 @@ class ChamadaController extends Controller
                 return $item->forPage($key + 1, $this->datePerPage);
             }));
         });
+
+        // dd($pagination);
 
         $conteudo = Conteudo::find($latest->value('conteudo_id'));
 

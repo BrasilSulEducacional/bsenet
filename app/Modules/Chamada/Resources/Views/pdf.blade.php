@@ -25,6 +25,7 @@
         transform: rotate(-90deg) translateX(-40px) translateY(-23px);
         position: absolute;
     }
+
 </style>
 <div class="root" style="font-family: Roboto, sans-serif">
     @foreach ($pagination as $alunos)
@@ -106,13 +107,13 @@
                             </td>
                         @endforeach
                     </tr>
-                    @foreach ($alunos as $aluno)
+                    @foreach ($alunos as $name => $aluno)
                         <tr style="border-bottom: 1px dashed #000;">
                             <td style="height: 25px; border-right: 1px solid #000;">
-                                {{ $aluno->first()->aluno->nome }}
+                                {{ $name }}
                             </td>
                             <td style="border-right: 1px solid #000; text-align: center;">
-                                {{ $aluno->first()->aluno->codigo }}
+                                {{-- {{ dump($aluno) }} --}}
                             </td>
 
                             @if ($aluno->has('diff'))
@@ -140,17 +141,19 @@
                             @endforeach
 
                             {{-- {{ dump($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() - 1 : 0)) }} --}}
-
+                            {{-- {{ dump($aluno->count()) }} --}}
                             @if ($aluno->count() != count($qtdDatas))
                                 @foreach (range(1, count($qtdDatas) - ($aluno->count() + ($aluno->has('diff') ? $aluno->get('diff')->count() - 1 : 0))) as $key => $item)
-                                    @if ($aluno->first()->aluno->turma->turma == 'Nenhuma')
+                                    {{-- @if (isset($aluno->first()->aluno->turma->turma) && $aluno->first()->aluno->turma->turma == 'Nenhuma')
+                                        {{ dump($item) }}
                                         <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
                                             -
                                         </td>
                                     @else
-                                        <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
-                                        </td>
-                                    @endif
+                                    @endif --}}
+
+                                    <td style="border-right: 1px solid #000; text-align: center; font-size: 1em">
+                                    </td>
                                 @endforeach
                             @endif
                         </tr>
