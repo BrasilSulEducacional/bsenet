@@ -41,7 +41,7 @@ class ChamadaController extends Controller
     protected $faltasJustificada = [
         0 => 'Não',
         1 => 'Sim',
-        null => '-'
+        '-'
     ];
 
     public function index(Content $content)
@@ -180,9 +180,13 @@ class ChamadaController extends Controller
             return "<span class=\"label label-{$color}\"> $item </span>";
         });
 
-        $grid->column('falta')->editable('select', $this->faltas);
+        $grid->column('falta', 'Situação')->editable('select', $this->faltas);
 
-        $grid->column('falta_justificada')->editable('select', $this->faltasJustificada);
+        $faltasJustificada = $this->faltasJustificada;
+
+        $grid->column('falta_justificada')->display(function ($item) use ($faltasJustificada) {
+            return is_null($item) ? 2 : $item;
+        })->editable('select', $this->faltasJustificada);
 
         $grid->filter(function ($filter) {
             $filter->disableIdFilter();
@@ -197,7 +201,7 @@ class ChamadaController extends Controller
             });
 
             $filter->column(1 / 2, function ($filter) {
-                $filter->between('feita_em')->date();
+                $filter->between('feita_em')->date("DD/MM/YYYY");
             });
         });
 
@@ -225,10 +229,14 @@ class ChamadaController extends Controller
     public function reviewUpdate(Request $request)
     {
         $chamadaId = $request->update;
-        $newDate = $request->input('feita_em');
 
         Chamada::where('id', $chamadaId)->update([
-            'feita_em' => $newDate
+            $request->input('name') => $request->input('value')
+        ]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Atualizado com sucesso!',
         ]);
     }
 
