@@ -11,7 +11,7 @@
     }
 
     @page {
-        margin: 20px 20px 20px 30px;
+        margin: 20px 20px 20px 50px;
     }
 
     .tables {
@@ -25,7 +25,6 @@
         transform: rotate(-90deg) translateX(-40px) translateY(-23px);
         position: absolute;
     }
-
 </style>
 <div class="root" style="font-family: Roboto, sans-serif">
     @foreach ($pagination as $alunos)
