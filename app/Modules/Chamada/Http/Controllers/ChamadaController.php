@@ -61,7 +61,6 @@ class ChamadaController extends Controller
 
         $turmas = Turma::where('professor_id', auth()->user()->id)->get();
 
-
         foreach ($turmas as $turma) {
             $table = new Table(['Conteúdo', 'Registros', 'Último registro', 'Ação']);
             // $table = new Table(['Keys', 'Values']);
