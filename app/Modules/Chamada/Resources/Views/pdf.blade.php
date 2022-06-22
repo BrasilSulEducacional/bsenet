@@ -112,7 +112,7 @@
                                 {{ $name }}
                             </td>
                             <td style="border-right: 1px solid #000; text-align: center;">
-                                {{-- {{ dump($aluno) }} --}}
+                                {{ $aluno->first()->aluno->codigo }}
                             </td>
 
                             @if ($aluno->has('diff'))
