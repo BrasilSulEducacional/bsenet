@@ -430,7 +430,7 @@ class ChamadaController extends Controller
 
         $turma = Turma::find($request->turmaId);
         $latest = $request->conteudoId ? $turma->chamadas()->where('conteudo_id', $request->conteudoId) : $turma->chamadas()->latest();
-        $chamada = Chamada::where('turma_id', $request->turmaId)->where('conteudo_id', $request->conteudoId);
+        $chamada = Chamada::where('turma_id', $request->turmaId)->where('conteudo_id', $request->conteudoId)->with('aluno');
         $alunos = $chamada->get()->sortBy([
             ['aluno.turma', 'desc'],
             ['aluno.nome', 'asc'],
@@ -438,15 +438,16 @@ class ChamadaController extends Controller
         ])->groupBy('aluno.nome');
 
         $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
-
+        // $chamadaDatas = $chamada->with('aluno')->get(['feita_em', 'periodo', 'aluno.codigo']);
+        // dd($chamada->with('aluno')->distinct()->get(['feita_em', 'periodo']));
+        
         $alunos->map(function ($item, $key) use ($chamadaDatas) {
             $diff = $chamadaDatas->pluck('feita_em')->diff($item->pluck('feita_em')->toArray())->all();
 
             if (!empty($diff)) {
                 $diff = collect($diff);
-
                 $diff->each(function ($date, $key) use ($item) {
-                    $item->push(collect(["feita_em" => $date]));
+                    $item->push(collect(["feita_em" => $date, 'codigo' => $item->pluck('aluno.codigo')->first()]));
                 });
 
                 $sorted = $item->sortBy(function ($date) {
