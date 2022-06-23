@@ -3,6 +3,7 @@
 namespace App\Modules\Chamada\Models;
 
 use App\Modules\Nota\Models\Nota;
+use Illuminate\Support\Facades\DB;
 use App\Modules\Aluno\Models\Aluno;
 use App\Modules\Turma\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
@@ -25,5 +26,15 @@ class Chamada extends Model
     public function aluno()
     {
         return $this->belongsTo(Aluno::class);
+    }
+
+    public function justificativa()
+    {
+        $table = $this->table;
+
+        return DB::table($table)
+            ->join('faltas_justificadas', $table . '.id', 'faltas_justificadas.chamada_id')
+            ->select()
+            ->get();
     }
 }
