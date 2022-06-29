@@ -8,6 +8,7 @@ use App\Modules\Aluno\Models\Aluno;
 use App\Modules\Turma\Models\Turma;
 use Illuminate\Database\Eloquent\Model;
 use App\Modules\Conteudo\Models\Conteudo;
+use App\Modules\Faltas\Models\Falta;
 
 class Chamada extends Model
 {
@@ -30,11 +31,6 @@ class Chamada extends Model
 
     public function justificativa()
     {
-        $table = $this->table;
-
-        return DB::table($table)
-            ->join('faltas_justificadas', $table . '.id', 'faltas_justificadas.chamada_id')
-            ->select()
-            ->get();
+        return $this->hasOne(Falta::class, 'chamada_id');
     }
 }
