@@ -92,6 +92,8 @@ class ChamadaController extends Controller
                     'conteudoId' => $item->last()->conteudo->id
                 ]);
 
+                $urlFalta = route('faltas.index', ['turma[turma]'=> $turma->turma]);
+
                 return [
                     $item->last()->conteudo->name,
                     $item->count() / 2,
@@ -103,9 +105,12 @@ class ChamadaController extends Controller
                         <a class=\"btn btn-danger btn-sm\" href=\"{$routeReport}\" id=\"report\" target=\"_blank\">
                             <i class=\"fa fa-file-pdf-o\"></i> Relatório
                         </a>
+                        <a class=\"btn btn-info btn-sm\" href=\"{$urlFalta}\">
+                            <i class=\"fa fa-asterisk\"></i> Faltas
+                        </a>
                         <a class=\"btn btn-warning btn-sm\" href=\"{$routeReview}\">
                             <i class=\"fa fa-edit\"></i> Editar
-                        </a>
+                        </a>                        
                     "
                 ];
             });

@@ -54,11 +54,24 @@ class FaltasController extends Controller
             ->where('falta_justificada', 0)
             ->whereDoesntHave('justificativa');
 
-        $grid->filter(function ($filter) {
+        $grid->filter(function ($filter) use ($turmas) {
+            $filter->disableIdFilter();
+            
             $filter->scope('falta_justificada', 'Buscar por faltas justificadas na chamada')
                 ->where('falta_justificada', '!=', 0)
                 ->orWhere('falta_justificada', 1)
                 ->whereDoesntHave('justificativa');
+
+            $filter->equal('turma.turma', 'Turma')
+                ->select($turmas->pluck('turma', 'turma'));
+
+            $filter->equal('periodo', 'Período')
+                ->radio([
+                    '' => 'Todos',
+                    1 => '1º Período',
+                    2 => '2º Período',
+                ]);
+            $filter->date('feita_em');
         });
 
         $grid->column('aluno.nome', 'Aluno');
