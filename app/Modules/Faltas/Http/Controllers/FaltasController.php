@@ -65,6 +65,7 @@ class FaltasController extends Controller
 
         $grid->column('conteudo.name', 'Conteudo');
         $grid->column('turma.turma', 'Turma')->badge('default');
+        $grid->column('periodo')->badge();
 
         $grid->column('feita_em')->display(function ($date) {
             return date('d/m/Y', strtotime($date));
