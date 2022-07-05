@@ -25,5 +25,6 @@ class Justificar extends RowAction
     {
         $this->display('id');
         $this->textarea('observacao', 'Observação')->required()->rules('required|min:20');
+        $this->checkbox('periodo', 'Período')->options(['1' => '1º Período', '2' => '2º Período']);
     }
 }
