@@ -24,8 +24,8 @@ class Justificar extends RowAction
     public function form()
     {
         $periodos = [
-            1 => '1º Período',
-            2 => '2º Período',
+            1 => '1 Período',
+            2 => '2 Período',
         ];
 
         $this->display('id');
