@@ -13,12 +13,7 @@
 
 Route::group([
     'middleware' => config('admin.route.middleware'),
-    'prefix' => 'faltas'
+    'prefix' => 'pagamentos'
 ], function () {
-    Route::get('/justificar', 'JustificarController@index')->name('justificar.index');
-    Route::post('/justificar/{chamadaId}', 'JustificarController@justificar')->name('justificar.chamada');
-
-    Route::get('/relatorio', 'RelatorioController@index')->name('relatorio.index');
-
-    Route::get('/list/all', 'FaltasController@all')->name('faltas.list');
+    Route::get('/', 'PagamentosController@index');
 });

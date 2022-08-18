@@ -92,7 +92,7 @@ class ChamadaController extends Controller
                     'conteudoId' => $item->last()->conteudo->id
                 ]);
 
-                $urlFalta = route('faltas.index', ['turma[turma]'=> $turma->turma]);
+                $urlFalta = route('justificar.index', ['turma[turma]'=> $turma->turma]);
 
                 return [
                     $item->last()->conteudo->name,

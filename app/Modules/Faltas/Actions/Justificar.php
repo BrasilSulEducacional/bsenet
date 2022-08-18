@@ -23,13 +23,8 @@ class Justificar extends RowAction
 
     public function form()
     {
-        $periodos = [
-            1 => '1 Período',
-            2 => '2 Período',
-        ];
-
         $this->display('id');
-        $this->checkbox('periodo')->options($periodos);
         $this->textarea('observacao', 'Observação')->required()->rules('required|min:20');
+        // dd($this->checkbox('periodo')->options($periodos)->render());
     }
 }
