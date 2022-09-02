@@ -76,6 +76,8 @@ class TurmaController extends Controller
             ->body($this->form());
     }
 
+
+
     protected function detail($id)
     {
         $show = new Show(Turma::findOrFail($id));

@@ -92,7 +92,7 @@ class ChamadaController extends Controller
                     'conteudoId' => $item->last()->conteudo->id
                 ]);
 
-                $urlFalta = route('justificar.index', ['turma[turma]'=> $turma->turma]);
+                $urlFalta = route('justificar.index', ['turma[turma]' => $turma->turma]);
 
                 return [
                     $item->last()->conteudo->name,
@@ -111,6 +111,7 @@ class ChamadaController extends Controller
                         <a class=\"btn btn-warning btn-sm\" href=\"{$routeReview}\">
                             <i class=\"fa fa-edit\"></i> Editar
                         </a>                        
+                        
                     "
                 ];
             });
@@ -445,7 +446,7 @@ class ChamadaController extends Controller
         $chamadaDatas = $chamada->distinct()->get(['feita_em', 'periodo']);
         // $chamadaDatas = $chamada->with('aluno')->get(['feita_em', 'periodo', 'aluno.codigo']);
         // dd($chamada->with('aluno')->distinct()->get(['feita_em', 'periodo']));
-        
+
         $alunos->map(function ($item, $key) use ($chamadaDatas) {
             $diff = $chamadaDatas->pluck('feita_em')->diff($item->pluck('feita_em')->toArray())->all();
 

@@ -15,5 +15,7 @@ Route::group([
     'middleware' => config('admin.route.middleware'),
     'prefix' => 'pagamentos'
 ], function () {
-    Route::get('/', 'PagamentosController@index');
+    Route::get('/', 'PagamentosController@index','pagamentos.index');
+    Route::get('/create', 'PagamentosController@create');
+
 });

@@ -15,6 +15,9 @@ class CreatePagamentosTable extends Migration
     {
         Schema::create('pagamentos', function (Blueprint $table) {
             $table->id();
+            $table->date("data_pgto");
+            $table->unsignedBigInteger('parcela_id');
+            $table->foreign('parcela_id')->references('id')->on('parcelas');
             $table->timestamps();
         });
     }

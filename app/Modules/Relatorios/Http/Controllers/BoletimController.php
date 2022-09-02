@@ -142,6 +142,7 @@ class BoletimController extends Controller
             \$form.unbind('submit');
         })");
 
+
         $form->select('turma_id', 'Turma')->options(function ($id) {
             $turma = Turma::find($id);
 
