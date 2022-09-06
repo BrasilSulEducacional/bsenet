@@ -70,7 +70,8 @@ class BoletimController extends Controller
             $somaNotas = Nota::where('aluno_id', $aluno->id)->sum('nota');
             $countNotas = Nota::where('aluno_id', $aluno->id)->count();
             $totalFaltas = Nota::where('aluno_id', $aluno->id)->sum('faltas');
-            $mediaGeral = $somaNotas / $countNotas;
+            $mediaGeral = divnum($somaNotas,$countNotas);
+                       
             $headersColor = $request->input('boletim_headers_color');
 
             $collection->push(compact('aluno', 'notas', 'mediaGeral', 'totalFaltas', 'headersColor'));
