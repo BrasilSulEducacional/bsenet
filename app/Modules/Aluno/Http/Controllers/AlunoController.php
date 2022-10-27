@@ -12,11 +12,15 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Grid;
 use Encore\Admin\Form;
 use Encore\Admin\Show;
+Use Encore\Admin\Admin;
+
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AlunoController extends Controller
 {
     use HasResourceActions;
+
 
     protected $situacao = [
         0 => 'Trancado',
@@ -95,7 +99,7 @@ class AlunoController extends Controller
             ->body($this->form()->edit($id));
     }
 
-    public function create(Content $content)
+    public function create(Request $request, Content $content)
     {
         return $content
             ->title('Aluno')
@@ -118,12 +122,22 @@ class AlunoController extends Controller
         return $show;
     }
 
+
+
     protected function form()
     {
+        $proxCod = DB::table("alunos")->select("codigo")->orderBy("codigo", "desc")->first();
+        $proxCod = $proxCod->codigo + 1;
+
+
         $form = new Form(new Aluno);
 
+
         $form->display('id');
-        $form->number('codigo', 'Código');
+        
+
+        
+        $form->number('codigo', 'Código')->value($proxCod)->help("Proximo Código: ".$proxCod);
 
         $form->text('nome')
             ->placeholder('Digite o nome do aluno');
