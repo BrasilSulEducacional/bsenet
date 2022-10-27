@@ -122,20 +122,14 @@ class AlunoController extends Controller
         return $show;
     }
 
-
-
     protected function form()
     {
         $proxCod = DB::table("alunos")->select("codigo")->orderBy("codigo", "desc")->first();
         $proxCod = $proxCod->codigo + 1;
 
-
         $form = new Form(new Aluno);
 
-
         $form->display('id');
-
-
 
         $form->number('codigo', 'Código')->min($proxCod)->value($proxCod)->help("Proximo Código: " . $proxCod);
 
