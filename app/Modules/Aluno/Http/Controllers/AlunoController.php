@@ -12,7 +12,7 @@ use Encore\Admin\Layout\Content;
 use Encore\Admin\Grid;
 use Encore\Admin\Form;
 use Encore\Admin\Show;
-Use Encore\Admin\Admin;
+use Encore\Admin\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -134,10 +134,10 @@ class AlunoController extends Controller
 
 
         $form->display('id');
-        
 
-        
-        $form->number('codigo', 'Código')->value($proxCod)->help("Proximo Código: ".$proxCod);
+
+
+        $form->number('codigo', 'Código')->min($proxCod)->value($proxCod)->help("Proximo Código: " . $proxCod);
 
         $form->text('nome')
             ->placeholder('Digite o nome do aluno');
