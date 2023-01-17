@@ -51,15 +51,21 @@ class NotaController extends Controller
         $grid->column('nome', 'Aluno')->expand(function (Model $model) {
             $notas = $model->notas->map(function ($nota) {
                 $edit = "<a title=\"Editar\" href=\"controle/" . $nota->id . "/edit\"> <i class=\"fa fa-edit\"></i> </a>";
+                $ch = 1.5 * $nota->aulas;
+                $presenca = $nota->aulas - $nota->faltas;
+                $freq = ((100 * $presenca) / $nota->aulas);
                 return [
-                    'conteudo' => $nota->conteudo->name,
-                    'nota' => $nota->nota,
-                    'faltas' => $nota->faltas,
+                    'conteudo' => $nota->conteudo->name, // Nome do conteúdo
+                    'nota' => $nota->nota,               // Nota do conteúdo
+                    'Aulas' => $nota->aulas,             // Quantidade de aulas
+                    'faltas' => $nota->faltas,           // Quantidade de faltas
+                    'ch' => $ch,                         // Quandiade carga horária
+                    'Frequencia' => $freq,               // Frequência da quele conteudo
                     'edit' => $edit
                 ];
             });
 
-            $table = new Table(['Conteúdo', 'Nota', 'Faltas', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
+            $table = new Table(['Conteúdo', 'Nota', 'Aulas', 'Faltas', 'CH', 'Frequência', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
 
             $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
 
