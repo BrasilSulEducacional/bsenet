@@ -51,9 +51,9 @@ class NotaController extends Controller
         $grid->column('nome', 'Aluno')->expand(function (Model $model) {
             $notas = $model->notas->map(function ($nota) {
                 $edit = "<a title=\"Editar\" href=\"controle/" . $nota->id . "/edit\"> <i class=\"fa fa-edit\"></i> </a>";
-                $ch = 1.5 * $nota->aulas;
+                $ch = round(1.5 * $nota->aulas);
                 $presenca = $nota->aulas - $nota->faltas;
-                $freq = ((100 * $presenca) / $nota->aulas);
+                $freq = round(((100 * $presenca) / $nota->aulas));
                 return [
                     'conteudo' => $nota->conteudo->name, // Nome do conteúdo
                     'nota' => $nota->nota,               // Nota do conteúdo
