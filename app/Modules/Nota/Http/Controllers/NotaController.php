@@ -59,13 +59,13 @@ class NotaController extends Controller
                     'nota' => $nota->nota,               // Nota do conteúdo
                     'Aulas' => $nota->aulas,             // Quantidade de aulas
                     'faltas' => $nota->faltas,           // Quantidade de faltas
-                    'ch' => $ch,                         // Quandiade carga horária
-                    'Frequencia' => $freq,               // Frequência da quele conteudo
+                    'ch' => $ch . " horas",                         // Quandiade carga horária
+                    'Frequencia' => $freq . "%",               // Frequência da quele conteudo
                     'edit' => $edit
                 ];
             });
 
-            $table = new Table(['Conteúdo', 'Nota', 'Aulas', 'Faltas', 'CH', 'Frequência', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
+            $table = new Table(['Conteúdo', 'Nota', 'Aulas', 'Faltas', 'CH', 'Frequência', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover', 'table-center']);
 
             $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
 
