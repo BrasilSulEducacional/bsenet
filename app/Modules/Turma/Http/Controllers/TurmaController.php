@@ -86,10 +86,24 @@ class TurmaController extends Controller
         $show->turma('Turma');
         $show->horario('Horário');
         $show->dias('dias');
-        $show->professor('Professor');
-        $show->created_at('Created at');
-        $show->updated_at('Updated at');
 
+        $show->professor('Professor da Turma', function ($prof) {
+            $prof->setResource('/auth/users');
+
+            $prof->id();
+            $prof->name();
+            $prof->avatar()->image();
+        });
+
+        $show->alunos("Alunos da Turma", function ($alunos) {
+
+            $alunos->setResource('/aluno/controle');
+
+            $alunos->id()->hide();
+            $alunos->codigo();
+            $alunos->nome()->editable()->sortable();
+            $alunos->data_nasc("Data de Nascimento")->date('Y')->sortable();
+        });
         return $show;
     }
 
