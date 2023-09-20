@@ -173,20 +173,28 @@ class BoletimController extends Controller
                 'Carga Horaria',
                 'Frequencia',
                 'Notas',
+                "CHTotal"
 
             );
-
+            $chTotal = 0;
             foreach ($notas as $nota) {
                 $conteudo = $nota->conteudo->name;
                 $ch = round(1.5 * $nota->aulas);
+                $chTotal += $ch;
                 $presenca = $nota->aulas - $nota->faltas;
                 $freq = round(((100 * $presenca) / $nota->aulas));
                 $notaConteudo = $nota->nota;
+
+
+
+
                 $array_content[] = [
                     'col_1' => $conteudo,
                     'col_2' => $ch . " Horas",
                     'col_3' => $freq . " %",
-                    'col_4' => $notaConteudo
+                    'col_4' => $notaConteudo,
+                    'col_5' => $chTotal
+
                 ];
             }
             $generate = new FileCSV();
