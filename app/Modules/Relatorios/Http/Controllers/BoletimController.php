@@ -184,7 +184,6 @@ class BoletimController extends Controller
                 $presenca = $nota->aulas - $nota->faltas;
                 $freq = round(((100 * $presenca) / $nota->aulas));
                 $notaConteudo = $nota->nota;
-                $notaConteudo = str_replace($notaConteudo, ".", ",");
 
                 $array_content[] = [
                     'col_1' => $conteudo,
