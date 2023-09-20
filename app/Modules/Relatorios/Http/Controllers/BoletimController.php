@@ -160,4 +160,40 @@ class BoletimController extends Controller
 
         return $box;
     }
+
+    public function export(Request $request)
+    {
+        if (!empty($request)) {
+            $array_content = [];
+            $idAlunos = $request["id"];
+            $notas = Nota::where('aluno_id', $idAlunos)->get();
+
+            $array_header = array(
+                'Conteudo',
+                'Carga Horaria',
+                'Frequencia',
+                'Notas',
+
+            );
+
+            foreach ($notas as $nota) {
+                $conteudo = $nota->conteudo->name;
+                $ch = round(1.5 * $nota->aulas);
+                $presenca = $nota->aulas - $nota->faltas;
+                $freq = round(((100 * $presenca) / $nota->aulas));
+                $notaConteudo = $nota->nota;
+                $array_content[] = [
+                    'col_1' => $conteudo,
+                    'col_2' => $ch . " Horas",
+                    'col_3' => $freq . " %",
+                    'col_4' => $notaConteudo
+                ];
+            }
+            $generate = new FileCSV();
+            $generate->setHeader($array_header);
+            $generate->setContent($array_content);
+            $generate->generateAndDownloadFileCSV();
+            return;
+        }
+    }
 }

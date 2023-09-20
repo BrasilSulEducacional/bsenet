@@ -67,7 +67,7 @@ class NotaController extends Controller
 
             $table = new Table(['Conteúdo', 'Nota', 'Aulas', 'Faltas', 'CH', 'Frequência', 'Ação'], $notas->toArray(), ['table-striped', 'table-hover']);
 
-            $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a>";
+            $footer = "<a href=\"" . url("/relatorios/boletim/report/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Imprimir Boletim </a> | <a href=\"" . url("/relatorios/boletim/export/aluno", ['aluno_id' => $model->id]) . "\" target=\"_blank\"> Exportar CSV </a>";
 
             $box = new Box('Notas', $table->render(), $footer);
             $box->addTools("<a href='#'> boletim </a>");
