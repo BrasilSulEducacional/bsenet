@@ -22,4 +22,6 @@ Route::group([
 
     Route::get('/chamada', 'ChamadaController@index')->name('relatorios.chamada.index');
     Route::post('/chamada/report', 'ChamadaController@report')->name('relatorios.chamada.report');
+
+    Route::get('/comprovante/parcela/{id}', 'PagamentoController@comprovante')->name("relatorios.comprovante.pagamento");
 });
