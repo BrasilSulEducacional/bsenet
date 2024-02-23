@@ -23,7 +23,6 @@
         text-decoration: none;
         text-transform: uppercase;
     }
-
 </style>
 
 <div class="title">
