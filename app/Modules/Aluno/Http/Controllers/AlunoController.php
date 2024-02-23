@@ -78,8 +78,6 @@ class AlunoController extends Controller
                 }
             })->ajax(route('sis.turma.all'));
         });
-
-
         return $grid;
     }
 
@@ -158,7 +156,7 @@ class AlunoController extends Controller
     public function all(Request $request)
     {
         if ($q = $request->get('q')) {
-            return Aluno::where('nome', 'like', "%$q%")->paginate(null, ['id', 'nome as text']);
+            return Aluno::where('nome', 'like', "%$q%")->orWhere('codigo', 'like', "%$q%")->paginate(null, ['id', 'nome as text']);
         }
 
         return Aluno::all()->take(10)->paginate(null, ['id', 'nome as text']);
