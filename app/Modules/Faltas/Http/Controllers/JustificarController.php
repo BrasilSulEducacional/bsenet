@@ -72,7 +72,7 @@ class JustificarController extends Controller
                     1 => '1º Período',
                     2 => '2º Período',
                 ]);
-            $filter->date('feita_em');
+            $filter->date('feita_em');;
         });
 
         $grid->column('aluno.nome', 'Aluno');
@@ -86,7 +86,7 @@ class JustificarController extends Controller
 
         $grid->column('feita_em')->display(function ($date) {
             return date('d/m/Y', strtotime($date));
-        });
+        })->filter("date");
 
         return $grid;
     }
