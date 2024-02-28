@@ -14,5 +14,5 @@
 
     </div>
     <!-- Default to the left -->
-    <strong>Desenvolvido por <a href="https://github.com/CauaGraff" target="_blank">Cauã Graff</a></strong>
+    <strong>Desenvolvido por <a href="https://github.com/CauaGraff" target="_blank">Cauã Graff</a> & <a href="https://github.com/victorhbbergamo" target="_blank">Victor Bergamo</a></strong>
 </footer>
