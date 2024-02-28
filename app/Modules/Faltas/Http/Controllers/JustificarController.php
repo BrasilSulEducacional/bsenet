@@ -53,6 +53,7 @@ class JustificarController extends Controller
             ->where('falta', 1)
             ->where('falta_justificada', 0)
             ->whereDoesntHave('justificativa')
+            ->where('feita_em', ">=","2024-03-01") // filtar as faltas apartir desta data que começamos a utilzar
             ->orderBy('feita_em', 'desc');
 
         $grid->filter(function ($filter) use ($turmas) {
