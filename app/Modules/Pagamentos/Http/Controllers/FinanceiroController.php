@@ -197,7 +197,7 @@ class FinanceiroController extends Controller
         $devendo = Devendo::where("aluno_id", $alunoId)->value("devendo") ?? 0;
         $diferenca = $dataAtual->diff($dataVencimento);
         $diasAtraso = $diferenca->days;
-        if ($diasAtraso > 0 ) {
+        if ($diasAtraso > 0 && $dataVencimento < $dataAtual) {
             $multa = self::MULTA * $valorOriginal;
             $juros = ((self::JUROS) * (int)$diasAtraso) * $valorOriginal;
             $total = $valorOriginal + $multa + $juros + $devendo;
@@ -260,5 +260,5 @@ class FinanceiroController extends Controller
         }
         admin_toastr('Não foi possivel Cadastrar o Pagamento', 'error');
         return redirect('/financeiro/parcelas/aluno/' . $request->alunoId);
-    }
+    } 
 }

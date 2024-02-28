@@ -22,8 +22,8 @@ class ParcelasController extends Controller
     public function index(Content $content)
     {
         return $content
-            ->title('Turmas')
-            ->description('Turmas')
+            ->title('Parcelas')
+            ->description('Parcelas')
             ->body($this->grid());
     }
 
