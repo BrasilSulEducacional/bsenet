@@ -31,7 +31,7 @@ class ParcelasController extends Controller
     {
         $grid = new Grid(new Parcelas);
         $grid->quickSearch(function ($model, $query) {
-            $model->where('id', $query)->orWhere('aluno_id', 'like', "%{$query}%");
+            $model->where('id', $query)->orWhere('aluno_id', '=', "%{$query}%");
         });
         $grid->model()->orderby('Id', 'asc');
         $grid->id('Id');

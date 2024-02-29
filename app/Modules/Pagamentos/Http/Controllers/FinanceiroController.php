@@ -247,6 +247,23 @@ class FinanceiroController extends Controller
                     $updateDevendo->devendo = $novoValorDevendo;
                     $updateDevendo->save();
                 }
+                $parcela = Parcelas::find($request->parcelaId);
+                if($request->valorPago < $parcela->valor){
+                    $devendo = Devendo::where("aluno_id", $request->alunoId);
+                    $valorDevendo = $devendo->value('devendo');
+                    $idDevendo = $devendo->value("id");
+                    if($idDevendo){
+                        $novoValorDevendo = $valorDevendo + ($parcela->valor-$request->valorPago);
+                        $updateDevendo = Devendo::find($idDevendo);
+                        $updateDevendo->devendo = $novoValorDevendo;
+                        $updateDevendo->save();
+                    }else{
+                        $novoDevedor = new Devendo();
+                        $novoDevedor->devendo = $parcela->valor-$request->valorPago;
+                        $novoDevedor->aluno_id = $request->alunoId;
+                        $novoDevedor->save();
+                    }
+                }
                 $novoPagamento = new Pagamentos();
                 $novoPagamento->data_pgto = $request->dataPagamento;
                 $novoPagamento->valor = $request->valorPago;

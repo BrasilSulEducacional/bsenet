@@ -174,6 +174,7 @@
                                 $("#juros").prop("disabled", true);
 
                             }
+                            $("#valorPago").val(response.data.valor.toFixed(2))
                             if (response.data.devendo > 0) {
                                 if (confirm("Está devendo: " + formata.format(response.data.devendo) + " da parcela anterior. Deseja cobrar?") == true) {
                                     $("#valorPago").val(response.data.valor.toFixed(2))
@@ -182,10 +183,8 @@
                                     var valor = parseFloat(response.data.valor) - parseFloat(response.data.devendo)
                                     $("#valorPago").val(valor.toFixed(2))
                                     $("#devendo").val(0)
-
                                 }
                             }
-                            $("#valorPago").val(response.data.valor.toFixed(2))
                         }
 
                         $("#multa").on('change', function() {
